@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class EdgeRenderer : MonoBehaviour
 {
@@ -6,6 +8,7 @@ public class EdgeRenderer : MonoBehaviour
     public Transform pointA;            // Endpoint A
     public Transform pointB;            // Endpoint B
     public LineRenderer lineRenderer;   // The LineRenderer for drawing the edge
+    private CutPathManager cutPathManager;
 
     [Header("Touch Settings")]
     public float touchThreshold;   // How close the finger must be to one of the segments to drag the middle point
@@ -14,11 +17,11 @@ public class EdgeRenderer : MonoBehaviour
     private float edgeLength;
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
-
+    private List<Vector3> pathPositions;
     void Start()
     {
         // Initialize the middle point at the center between A and B.
-        midPoint = (pointA.position + pointB.position) * 0.5f; 
+        midPoint = (pointA.position + pointB.position) * 0.5f;
         maxEdgeLength = maxEdgeLengthStretch * Vector3.Distance(pointA.position, pointB.position);
         lineRenderer.positionCount = 3;
         lineRenderer.SetPosition(0, pointA.position);
@@ -32,67 +35,97 @@ public class EdgeRenderer : MonoBehaviour
         // LineRenderer width
         lineRenderer.startWidth = 5.0f;  // Set the thickness at the start of the line
         lineRenderer.endWidth = 5.0f;
+
+        // get the cutPathM
+        GameObject pathGeneratorObject = GameObject.Find("inputManager");
+        cutPathManager = pathGeneratorObject.GetComponent<CutPathManager>();
     }
 
     void Update()
     {
-        // Mobile touch handling or mouse simulation for testing in the editor.
-#if UNITY_EDITOR
-        if (Input.GetMouseButton(0))
-        {
-            // Convert mouse position to world point.
-            Vector3 screenPos = Input.mousePosition;
-            // Ensure a proper z value based on your scene’s camera configuration.
-            screenPos.z = 10f;  
-            Vector3 touchPos = Camera.main.ScreenToWorldPoint(screenPos);
-
-            ProcessTouch(touchPos);
-        }
-        else if (dragging)
-        {
+        pathPositions = cutPathManager.GetPathPositions();
+        // Debug.Log(pathPositions.Count);
+        if (pathPositions.Count >= 2)
+            ProcessTouch();
+        else if (pathPositions.Count == 0 && dragging)
             ResetMiddlePoint();
-        }
-#else
-    if (Input.touchCount > 0)  // Check if there is at least one touch
-    {
-        Touch touch = Input.GetTouch(0);
-
-        // Convert touch position to world space. Adjust the z value as needed.
-        Vector3 touchPos = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 10f));
-
-        ProcessTouch(touchPos);  // Process the touch position
-    }
-    else if (dragging)
-    {
-        ResetMiddlePoint();  // Reset if no touch is detected
-    }
-#endif
+        // Mobile touch handling or mouse simulation for testing in the editor.
+        // #if UNITY_EDITOR
+        //     if (Mouse.current.leftButton.isPressed)
+        //     {
+        //         Vector2 screenPos = Mouse.current.position.ReadValue();
+        //         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height); // Safety clamp
+        //         Vector3 touchPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
+        //         ProcessTouch(touchPos);
+        //     }
+        //     else if (dragging)
+        //     {
+        //         ResetMiddlePoint();
+        //     }
+        // #else
+        //     if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
+        //     {
+        //         Vector2 screenPos = Touchscreen.current.primaryTouch.position.ReadValue();
+        //         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height); // Safety clamp
+        //         Vector3 touchPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
+        //         ProcessTouch(touchPos);
+        //     }
+        //     else if (dragging)
+        //     {
+        //         ResetMiddlePoint();
+        //     }
+        // #endif
     }
 
     // Process the current touch (or mouse) position.
-    void ProcessTouch(Vector3 touchPos)
+    void ProcessTouch()
     {
-        // Calculate distances from the touch position to the two segments.
-        float distSegment1 = DistancePointToLine(touchPos, pointA.position, midPoint);
-        float distSegment2 = DistancePointToLine(touchPos, midPoint, pointB.position);
-        // If the touch is close enough to either segment, update the middle point.
-        if (distSegment1 < touchThreshold || distSegment2 < touchThreshold)
+        Vector2 lastPoint = pathPositions[pathPositions.Count - 1];
+        Vector2 secondLastPoint = pathPositions[pathPositions.Count - 2];
+        float distSegment1 = DistancePointToLine(lastPoint, pointA.position, midPoint);
+        float distSegment2 = DistancePointToLine(lastPoint, midPoint, pointB.position);
+        if (lineSegmentsIntersect(pointA.position, midPoint, secondLastPoint, lastPoint) || lineSegmentsIntersect(pointB.position, midPoint, secondLastPoint, lastPoint) || distSegment1 < touchThreshold || distSegment2 < touchThreshold)
         {
-            midPoint = touchPos;
+            midPoint = lastPoint;
             dragging = true;
             UpdateLine();
         }
-        else if (dragging) { 
+        else if (dragging)
+        {
             // if the finger gets too far away while dragging: reset
             // should not occur but does
             ResetMiddlePoint();
         }
+        // Calculate distances from the touch position to the two segments
+        // float distSegment1 = DistancePointToLine(lastPoint, pointA.position, midPoint);
+        // float distSegment2 = DistancePointToLine(lastPoint, midPoint, pointB.position);
+        // // If the touch is close enough to either segment, update the middle point.
+        // float maxDist = touchThreshold;
+        // if (dragging)
+        //     maxDist *= 3;
+        // if (distSegment1 < touchThreshold || distSegment2 < touchThreshold)
+        // {
+        //     midPoint = lastPoint;
+        //     dragging = true;
+        //     UpdateLine();
+        // }
+        // else if (dragging)
+        // {
+        //     // if the finger gets too far away while dragging: reset
+        //     // should not occur but does
+        //     ResetMiddlePoint();
+        // }
+    }
+
+    public static bool lineSegmentsIntersect(Vector2 lineOneA, Vector2 lineOneB, Vector2 lineTwoA, Vector2 lineTwoB)
+    {
+        return (((lineTwoB.y - lineOneA.y) * (lineTwoA.x - lineOneA.x) > (lineTwoA.y - lineOneA.y) * (lineTwoB.x - lineOneA.x)) != ((lineTwoB.y - lineOneB.y) * (lineTwoA.x - lineOneB.x) > (lineTwoA.y - lineOneB.y) * (lineTwoB.x - lineOneB.x)) && ((lineTwoA.y - lineOneA.y) * (lineOneB.x - lineOneA.x) > (lineOneB.y - lineOneA.y) * (lineTwoA.x - lineOneA.x)) != ((lineTwoB.y - lineOneA.y) * (lineOneB.x - lineOneA.x) > (lineOneB.y - lineOneA.y) * (lineTwoB.x - lineOneA.x)));
     }
 
     // Update the positions on the LineRenderer.
     void UpdateLine()
     {
-        
+
         lineRenderer.SetPosition(1, midPoint);
         if (dragging) // if the touch is far from either endpoint, reset the middle point.
         {

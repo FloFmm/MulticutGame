@@ -48,7 +48,7 @@ MonoBehaviour:
   pointA: {fileID: 0}
   pointB: {fileID: 0}
   lineRenderer: {fileID: 0}
-  touchThreshold: 10
+  touchThreshold: 100
   maxEdgeLengthStretch: 1.1
 --- !u!120 &2879204654193666907
 LineRenderer:

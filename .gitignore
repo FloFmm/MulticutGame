@@ -75,3 +75,8 @@ crashlytics-build.properties
 
 # VS code
 .vscode
+
+# build
+builds
+
+mono_crash.mem.6403.1.blob
