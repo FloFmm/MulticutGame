@@ -25,14 +25,14 @@ public class CutPathManager : MonoBehaviour
         {
             HandleTouchInput();
         }
-        else if (Mouse.current.leftButton.isPressed) // Simulate with mouse input
-        {
-            HandleMouseInput();
-        }
+        // else if (Mouse.current.leftButton.isPressed) // Simulate with mouse input
+        // {
+        //     HandleMouseInput();
+        // }
 
         // Optionally handle touch/mouse end
-        if ((touchscreen != null && !touchscreen.primaryTouch.press.isPressed && pathPositions.Count > 0) ||
-            (!Mouse.current.leftButton.isPressed && pathPositions.Count > 0))
+        if ((touchscreen != null && !touchscreen.primaryTouch.press.isPressed && pathPositions.Count > 0)) 
+            // || (touchscreen == null && !Mouse.current.leftButton.isPressed && pathPositions.Count > 0))
         {
             // Do something with the path, for example, save it or reset it
             Debug.Log("Path Ended with " + pathPositions.Count + " points.");

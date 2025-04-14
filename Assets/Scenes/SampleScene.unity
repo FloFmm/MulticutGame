@@ -468,7 +468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 642777019252402597, guid: 310b297f7355253cc97db9dcd5fe4cc2, type: 3}
   edgePrefab: {fileID: 1758848745225262331, guid: 0998997176c5a9ca4bc0b7d41deb1914, type: 3}
-  nodeCount: 2
+  nodeCount: 10
 --- !u!4 &578896008
 Transform:
   m_ObjectHideFlags: 0

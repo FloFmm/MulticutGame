@@ -18,6 +18,75 @@ public class EdgeRenderer : MonoBehaviour
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
     private List<Vector3> pathPositions;
+    private int cost = 0;
+
+    private static readonly List<Color> costColors = new()
+    {
+        Color.white,                                      // 0
+        Color.green,                                      // 1
+        Color.Lerp(Color.green, Color.cyan, 0.5f),        // 2
+        Color.cyan,                                       // 3
+        Color.Lerp(Color.cyan, Color.blue, 0.5f),         // 4
+        Color.blue,                                       // 5
+        Color.Lerp(Color.blue, Color.magenta, 0.5f),      // 6
+        Color.magenta,                                    // 7
+        Color.Lerp(Color.magenta, Color.red, 0.33f),      // 8
+        Color.Lerp(Color.magenta, Color.red, 0.66f),      // 9
+        Color.red,                                        // 10
+        Color.Lerp(Color.red, Color.black, 0.5f),         // 11
+        Color.black                                       // 12
+    };
+    public int Cost
+    {
+        get => cost;
+        set
+        {
+            cost = value;
+            lineRenderer.startWidth = Mathf.Clamp(4f + (cost + 5)/10f * 8f, 4f, 12f);
+            lineRenderer.endWidth = Mathf.Clamp(4f + (cost + 5)/10f * 8f, 4f, 12f);
+            // Clamp the cost to the color list range
+            int colorIndex = Mathf.Clamp(cost+6, 0, costColors.Count - 1);
+            Color color = costColors[colorIndex];
+            lineRenderer.startColor = color;
+            lineRenderer.endColor = color;
+        }
+    }
+
+    private bool isCut = false;
+    public bool IsCut
+    {
+        get => isCut;
+        set
+        {
+            isCut = value;
+            Color color = lineRenderer.startColor;
+            float alpha = isCut ? 0.3f : 1f; // half-transparent if cut
+            color.a = alpha;
+
+            lineRenderer.startColor = color;
+            lineRenderer.endColor = color;
+        }
+    }
+
+    private bool optimalCut = true;
+    public bool OptimalCut
+    {
+        get => optimalCut;
+        set
+        {
+            optimalCut = value;
+        }
+    }
+    
+    
+
+    void Awake()
+    {
+        // get the cutPathM
+        GameObject pathGeneratorObject = GameObject.Find("inputManager");
+        cutPathManager = pathGeneratorObject.GetComponent<CutPathManager>();
+    }
+
     void Start()
     {
         // Initialize the middle point at the center between A and B.
@@ -29,16 +98,12 @@ public class EdgeRenderer : MonoBehaviour
         lineRenderer.SetPosition(2, pointB.position);
 
         // LineRenderer color 
-        lineRenderer.startColor = Color.black;
-        lineRenderer.endColor = Color.white;
+        // lineRenderer.startColor = Color.white;
+        // lineRenderer.endColor = Color.white;
 
         // LineRenderer width
-        lineRenderer.startWidth = 5.0f;  // Set the thickness at the start of the line
-        lineRenderer.endWidth = 5.0f;
-
-        // get the cutPathM
-        GameObject pathGeneratorObject = GameObject.Find("inputManager");
-        cutPathManager = pathGeneratorObject.GetComponent<CutPathManager>();
+        // lineRenderer.startWidth = 5.0f;  // Set the thickness at the start of the line
+        // lineRenderer.endWidth = 5.0f;
     }
 
     void Update()
@@ -133,6 +198,16 @@ public class EdgeRenderer : MonoBehaviour
             if (edgeLength > maxEdgeLength)
             {
                 ResetMiddlePoint();
+                IsCut = !IsCut;
+                // if (IsCut) {
+                //     lineRenderer.startColor = Color.black;
+                //     lineRenderer.endColor = Color.black;
+                // }
+                // else 
+                // {
+                //     lineRenderer.startColor = Color.white;
+                //     lineRenderer.endColor = Color.white;
+                // }
             }
         }
     }
