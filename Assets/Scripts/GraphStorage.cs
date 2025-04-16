@@ -3,25 +3,14 @@ using UnityEngine;
 
 public static class GraphStorage
 {
-    // private static string FilePath => Path.Combine(Application.persistentDataPath, "graphs.json");
-    private static string FilePath => Path.Combine(Application.streamingAssetsPath, "graphs.json");
-
-    public static void SaveGraphs(GraphList graphList)
-    {
-        string json = JsonUtility.ToJson(graphList, true);
-        File.WriteAllText(FilePath, json);
-        Debug.Log($"Graphs saved to {FilePath}");
-    }
-
     public static GraphList LoadGraphs()
     {
-        if (!File.Exists(FilePath))
+        TextAsset jsonFile = Resources.Load<TextAsset>("graphs");
+        if (jsonFile == null)
         {
-            Debug.LogWarning("Graph file not found!");
-            return new GraphList();
+            Debug.LogError("Graph file not found in Resources.");
+            return new GraphList();  // Return an empty GraphList in case of an error
         }
-
-        string json = File.ReadAllText(FilePath);
-        return JsonUtility.FromJson<GraphList>(json);
+        return JsonUtility.FromJson<GraphList>(jsonFile.text);
     }
 }

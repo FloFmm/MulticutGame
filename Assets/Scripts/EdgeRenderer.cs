@@ -4,54 +4,45 @@ using System.Collections.Generic;
 
 public class EdgeRenderer : MonoBehaviour
 {
-    [Header("Assign these in the Inspector")]
     public Transform pointA;            // Endpoint A
     public Transform pointB;            // Endpoint B
     public LineRenderer lineRenderer;   // The LineRenderer for drawing the edge
-    private CutPathManager cutPathManager;
-
-    [Header("Touch Settings")]
     public float touchThreshold;   // How close the finger must be to one of the segments to drag the middle point
     public float maxEdgeLengthStretch;   // If the touch gets further than this from A or B, reset the middle point
+    private float edgeWidth;
+    public List<int> availableCosts;
+    public List<float> availableEdgeWidths;
+    public List<Color> availableColors;
+    public List<float> availablePitches;
+
+    private int lineType;
+    private CutPathManager cutPathManager;
     private float maxEdgeLength;
     private float edgeLength;
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
     private List<Vector3> pathPositions;
     private int cost = 0;
+    private float pitch;
 
-    private static readonly List<Color> costColors = new()
-    {
-        Color.white,                                      // 0
-        Color.green,                                      // 1
-        Color.Lerp(Color.green, Color.cyan, 0.5f),        // 2
-        Color.cyan,                                       // 3
-        Color.Lerp(Color.cyan, Color.blue, 0.5f),         // 4
-        Color.blue,                                       // 5
-        Color.Lerp(Color.blue, Color.magenta, 0.5f),      // 6
-        Color.magenta,                                    // 7
-        Color.Lerp(Color.magenta, Color.red, 0.33f),      // 8
-        Color.Lerp(Color.magenta, Color.red, 0.66f),      // 9
-        Color.red,                                        // 10
-        Color.Lerp(Color.red, Color.black, 0.5f),         // 11
-        Color.black                                       // 12
-    };
     public int Cost
     {
         get => cost;
         set
         {
             cost = value;
-            lineRenderer.startWidth = Mathf.Clamp(4f + (cost + 5)/10f * 8f, 4f, 12f);
-            lineRenderer.endWidth = Mathf.Clamp(4f + (cost + 5)/10f * 8f, 4f, 12f);
-            // Clamp the cost to the color list range
-            int colorIndex = Mathf.Clamp(cost+6, 0, costColors.Count - 1);
-            Color color = costColors[colorIndex];
-            lineRenderer.startColor = color;
-            lineRenderer.endColor = color;
+            lineType = availableCosts.IndexOf(cost);
+            if (lineType == -1)
+            {
+                lineType = 0;
+            }
+            lineRenderer.startWidth = availableEdgeWidths[lineType];
+            lineRenderer.endWidth = availableEdgeWidths[lineType];
+            lineRenderer.startColor = availableColors[lineType];
+            lineRenderer.endColor = availableColors[lineType];
+            pitch = availablePitches[lineType];
         }
     }
-
     private bool isCut = false;
     public bool IsCut
     {
@@ -67,7 +58,6 @@ public class EdgeRenderer : MonoBehaviour
             lineRenderer.endColor = color;
         }
     }
-
     private bool optimalCut = true;
     public bool OptimalCut
     {
@@ -77,8 +67,7 @@ public class EdgeRenderer : MonoBehaviour
             optimalCut = value;
         }
     }
-    
-    
+
 
     void Awake()
     {
@@ -96,14 +85,6 @@ public class EdgeRenderer : MonoBehaviour
         lineRenderer.SetPosition(0, pointA.position);
         lineRenderer.SetPosition(1, midPoint);
         lineRenderer.SetPosition(2, pointB.position);
-
-        // LineRenderer color 
-        // lineRenderer.startColor = Color.white;
-        // lineRenderer.endColor = Color.white;
-
-        // LineRenderer width
-        // lineRenderer.startWidth = 5.0f;  // Set the thickness at the start of the line
-        // lineRenderer.endWidth = 5.0f;
     }
 
     void Update()
@@ -114,32 +95,6 @@ public class EdgeRenderer : MonoBehaviour
             ProcessTouch();
         else if (pathPositions.Count == 0 && dragging)
             ResetMiddlePoint();
-        // Mobile touch handling or mouse simulation for testing in the editor.
-        // #if UNITY_EDITOR
-        //     if (Mouse.current.leftButton.isPressed)
-        //     {
-        //         Vector2 screenPos = Mouse.current.position.ReadValue();
-        //         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height); // Safety clamp
-        //         Vector3 touchPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
-        //         ProcessTouch(touchPos);
-        //     }
-        //     else if (dragging)
-        //     {
-        //         ResetMiddlePoint();
-        //     }
-        // #else
-        //     if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
-        //     {
-        //         Vector2 screenPos = Touchscreen.current.primaryTouch.position.ReadValue();
-        //         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height); // Safety clamp
-        //         Vector3 touchPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
-        //         ProcessTouch(touchPos);
-        //     }
-        //     else if (dragging)
-        //     {
-        //         ResetMiddlePoint();
-        //     }
-        // #endif
     }
 
     // Process the current touch (or mouse) position.
@@ -161,25 +116,6 @@ public class EdgeRenderer : MonoBehaviour
             // should not occur but does
             ResetMiddlePoint();
         }
-        // Calculate distances from the touch position to the two segments
-        // float distSegment1 = DistancePointToLine(lastPoint, pointA.position, midPoint);
-        // float distSegment2 = DistancePointToLine(lastPoint, midPoint, pointB.position);
-        // // If the touch is close enough to either segment, update the middle point.
-        // float maxDist = touchThreshold;
-        // if (dragging)
-        //     maxDist *= 3;
-        // if (distSegment1 < touchThreshold || distSegment2 < touchThreshold)
-        // {
-        //     midPoint = lastPoint;
-        //     dragging = true;
-        //     UpdateLine();
-        // }
-        // else if (dragging)
-        // {
-        //     // if the finger gets too far away while dragging: reset
-        //     // should not occur but does
-        //     ResetMiddlePoint();
-        // }
     }
 
     public static bool lineSegmentsIntersect(Vector2 lineOneA, Vector2 lineOneB, Vector2 lineTwoA, Vector2 lineTwoB)
@@ -199,15 +135,6 @@ public class EdgeRenderer : MonoBehaviour
             {
                 ResetMiddlePoint();
                 IsCut = !IsCut;
-                // if (IsCut) {
-                //     lineRenderer.startColor = Color.black;
-                //     lineRenderer.endColor = Color.black;
-                // }
-                // else 
-                // {
-                //     lineRenderer.startColor = Color.white;
-                //     lineRenderer.endColor = Color.white;
-                // }
             }
         }
     }
@@ -217,6 +144,7 @@ public class EdgeRenderer : MonoBehaviour
     {
         dragging = false;
         midPoint = (pointA.position + pointB.position) * 0.5f;
+        GetComponent<SoundPlayer>().PlaySoundWithPitch(pitch);
         UpdateLine();
     }
 
