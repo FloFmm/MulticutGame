@@ -7,6 +7,7 @@ public class Node
 {
     public int Id;
     public Vector2 Position;  // Add 2D position for each node
+    public int ConnectedComponentId = -1;
 }
 
 [Serializable]

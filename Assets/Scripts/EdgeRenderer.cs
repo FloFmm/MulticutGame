@@ -17,14 +17,14 @@ public class EdgeRenderer : MonoBehaviour
 
     private int lineType;
     private CutPathManager cutPathManager;
+    public GraphManager graphManager;
     private float maxEdgeLength;
     private float edgeLength;
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
     private List<Vector3> pathPositions;
-    private int cost = 0;
     private float pitch;
-
+    private int cost = 0;
     public int Cost
     {
         get => cost;
@@ -49,11 +49,12 @@ public class EdgeRenderer : MonoBehaviour
         get => isCut;
         set
         {
+            if (isCut != value)
+                graphManager.updateScoreText(value, cost);
             isCut = value;
             Color color = lineRenderer.startColor;
             float alpha = isCut ? 0.3f : 1f; // half-transparent if cut
             color.a = alpha;
-
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;
         }
@@ -72,7 +73,7 @@ public class EdgeRenderer : MonoBehaviour
     void Awake()
     {
         // get the cutPathM
-        GameObject pathGeneratorObject = GameObject.Find("inputManager");
+        GameObject pathGeneratorObject = GameObject.Find("InputManager");
         cutPathManager = pathGeneratorObject.GetComponent<CutPathManager>();
     }
 

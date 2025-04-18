@@ -21,7 +21,7 @@
         { "FromNodeId": 5, "ToNodeId": 6, "Cost": -1, "IsCut": false, "OptimalCut": false },
         { "FromNodeId": 6, "ToNodeId": 7, "Cost": 2, "IsCut": false, "OptimalCut": true },
         { "FromNodeId": 7, "ToNodeId": 8, "Cost": -1, "IsCut": false, "OptimalCut": false },
-        { "FromNodeId": 7, "ToNodeId": 2, "Cost": 1, "IsCut": false, "OptimalCut": false },
+        { "FromNodeId": 7, "ToNodeId": 2, "Cost": 100, "IsCut": false, "OptimalCut": false },
         { "FromNodeId": 8, "ToNodeId": 5, "Cost": 100, "IsCut": false, "OptimalCut": false }
       ],
       "OptimalCost": 20
