@@ -1,10 +1,39 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
 
 public class MulticutLogic : MonoBehaviour
 {
-    public static void AssignConnectedComponents(Graph graph)
+    public static Graph FilterGraphByComponentIds(Graph originalGraph, List<int> componentIds)
+    {
+        // Step 1: Filter nodes (which either are in component one of the given components)
+        var filteredNodes = originalGraph.Nodes
+            .Where(node => componentIds.Contains(node.ConnectedComponentId))
+            .ToList();
+
+        // Create a hash set of the filtered node IDs for fast lookup
+        var validNodeIds = new HashSet<int>(filteredNodes.Select(n => n.Id));
+
+        // Step 2: Filter edges that connect two nodes in the filtered node list
+        var filteredEdges = originalGraph.Edges
+            .Where(edge => validNodeIds.Contains(edge.FromNodeId) && validNodeIds.Contains(edge.ToNodeId))
+            .ToList();
+
+        // Step 3: Create new graph
+        Graph filteredGraph = new Graph
+        {
+            Nodes = filteredNodes,
+            Edges = filteredEdges,
+            OptimalCost = originalGraph.OptimalCost
+        };
+
+        return filteredGraph;
+    }
+    
+    
+    public static int AssignConnectedComponents(Graph graph)
     {
         Dictionary<int, List<int>> adjacencyList = BuildAdjacencyList(graph);
         HashSet<int> visited = new();
@@ -18,6 +47,7 @@ public class MulticutLogic : MonoBehaviour
                 currentComponentId++;
             }
         }
+        return currentComponentId;
     }
 
     private static Dictionary<int, List<int>> BuildAdjacencyList(Graph graph)

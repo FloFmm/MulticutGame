@@ -1,18 +1,20 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro; // Needed for TextMeshPro
+using System;
 
 public class GraphManager : MonoBehaviour
 {
     public GameObject nodePrefab;
     public GameObject edgePrefab;
     public TextMeshProUGUI scoreText;
-    private List<GameObject> nodes = new List<GameObject>();
+    
     private List<GameObject> edges = new List<GameObject>();
     private GraphList CurrentGraphList;
-    private Graph currentGraph;
+    public Graph currentGraph;
     private int currentScore = 0;
-
+    private Dictionary<int, GameObject> nodeIdToGameObjectMap;
+    private int numComponents;
     void Start()
     {
         CurrentGraphList = GraphStorage.LoadGraphs();
@@ -21,8 +23,9 @@ public class GraphManager : MonoBehaviour
             currentScore = 0;
             currentGraph = CurrentGraphList.Graphs[0];
             scoreText.text = $"0 / {currentGraph.OptimalCost}";
-            MulticutLogic.AssignConnectedComponents(currentGraph);
-            GenerateGraph(currentGraph); // Use the first graph in the list
+            numComponents = MulticutLogic.AssignConnectedComponents(currentGraph);
+            GenerateGraph(); // Use the first graph in the list
+            updateConnectedComponents();
         }
         else
         {
@@ -31,13 +34,14 @@ public class GraphManager : MonoBehaviour
     }
 
     // public List<GameObject> GetEdges() => edges;void Start()
-    void GenerateGraph(Graph graph)
+    void GenerateGraph()
     {
+        nodeIdToGameObjectMap = new Dictionary<int, GameObject>();
         // Step 1: Determine bounds of graph
         float minX = float.MaxValue, maxX = float.MinValue;
         float minY = float.MaxValue, maxY = float.MinValue;
 
-        foreach (var node in graph.Nodes)
+        foreach (var node in currentGraph.Nodes)
         {
             if (node.Position.x < minX) minX = node.Position.x;
             if (node.Position.x > maxX) maxX = node.Position.x;
@@ -65,7 +69,7 @@ public class GraphManager : MonoBehaviour
         Vector2 screenCenter = new Vector2((bottomLeft.x + topRight.x) / 2f, (bottomLeft.y + topRight.y) / 2f);
 
         // Step 5: Instantiate nodes
-        foreach (var node in graph.Nodes)
+        foreach (var node in currentGraph.Nodes)
         {
             // Normalize, scale, and center
             Vector2 localPos = node.Position - graphCenter;
@@ -73,18 +77,76 @@ public class GraphManager : MonoBehaviour
             Vector3 worldPos = new Vector3(screenCenter.x + scaledPos.x, screenCenter.y + scaledPos.y, 0f);
 
             GameObject nodeObj = Instantiate(nodePrefab, worldPos, Quaternion.identity);
-            NodeRenderer nodeRenderer = nodeObj.GetComponent<NodeRenderer>();
-            // nodeRenderer.ConnectedComponentId = 1;
-            // renderer.material.color;
-            nodes.Add(nodeObj);
+            nodeIdToGameObjectMap[node.Id] = nodeObj;
         }
 
         // Step 6: Instantiate edges
-        foreach (var edge in graph.Edges)
+        foreach (var edge in currentGraph.Edges)
         {
-            GameObject nodeA = nodes[edge.FromNodeId];
-            GameObject nodeB = nodes[edge.ToNodeId];
-            CreateEdge(nodeA, nodeB, edge.Cost, edge.IsCut, edge.OptimalCut);
+            GameObject nodeA = nodeIdToGameObjectMap[edge.FromNodeId];
+            GameObject nodeB = nodeIdToGameObjectMap[edge.ToNodeId];
+            CreateEdge(nodeA, nodeB, edge);
+        }
+    }
+
+    public void updateConnectedComponents(Edge edge = null)
+    {
+        if (edge != null)
+        {
+            int id1 = nodeIdToGameObjectMap[edge.FromNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
+            int id2 = nodeIdToGameObjectMap[edge.ToNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
+            if (id1 > id2)
+            {
+                int tmp = id1;
+                id1 = id2;
+                id2 = tmp;
+            }
+            Graph subgraph = MulticutLogic.FilterGraphByComponentIds(currentGraph, new List<int> {id1, id2});
+            int numComponentsNew = MulticutLogic.AssignConnectedComponents(subgraph);
+            if (numComponentsNew == 1)
+            {
+                if (id1!=id2)
+                    numComponents -= 1;
+                // nothing happened or two components were joined
+                foreach (var node in subgraph.Nodes)
+                {
+                    node.ConnectedComponentId = id1;
+                }
+            }
+            else if (numComponentsNew == 2)
+            {
+                if (id1 == id2)
+                    numComponents += 1;
+                // nothing happened or two components were seperated
+                foreach (var node in subgraph.Nodes)
+                {
+                    if (node.ConnectedComponentId == 0)
+                    {
+                        node.ConnectedComponentId = id1;
+                    }
+                    else
+                    {
+                        if (id1!=id2)
+                            node.ConnectedComponentId = id2;
+                        else
+                            node.ConnectedComponentId = numComponents - 1;
+                    }
+                }
+            }
+            else
+                throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsNew}", nameof(numComponentsNew));
+
+        }
+        else{
+            numComponents = MulticutLogic.AssignConnectedComponents(currentGraph);
+        }
+        
+        foreach (var node in currentGraph.Nodes)
+        {
+            GameObject nodeObj = nodeIdToGameObjectMap[node.Id];
+            NodeRenderer nodeRenderer = nodeObj.GetComponent<NodeRenderer>();
+            if (nodeRenderer.ConnectedComponentId != node.ConnectedComponentId)
+                nodeRenderer.ConnectedComponentId = node.ConnectedComponentId;
         }
     }
 
@@ -98,18 +160,16 @@ public class GraphManager : MonoBehaviour
     }
 
 
-    void CreateEdge(GameObject nodeA, GameObject nodeB, int cost, bool isCut, bool optimalCut)
+    void CreateEdge(GameObject nodeA, GameObject nodeB, Edge edge)
     {
         // Instantiate edge prefab
-        GameObject edge = Instantiate(edgePrefab, Vector3.zero, Quaternion.identity, this.transform);
+        GameObject edgeObj = Instantiate(edgePrefab, Vector3.zero, Quaternion.identity, this.transform);
 
         // Set up edge renderer (assuming LineRenderer is set in the prefab)
-        EdgeRenderer edgeRenderer = edge.GetComponent<EdgeRenderer>();
+        EdgeRenderer edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
         edgeRenderer.graphManager = this;
         edgeRenderer.pointA = nodeA.transform;
         edgeRenderer.pointB = nodeB.transform;
-        edgeRenderer.Cost = cost;
-        edgeRenderer.IsCut = isCut;
-        edgeRenderer.OptimalCut = optimalCut;
+        edgeRenderer.Edge = edge;
     }
 }

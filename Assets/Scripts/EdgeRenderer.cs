@@ -14,24 +14,34 @@ public class EdgeRenderer : MonoBehaviour
     public List<float> availableEdgeWidths;
     public List<Color> availableColors;
     public List<float> availablePitches;
-
+    public GraphManager graphManager;
     private int lineType;
     private CutPathManager cutPathManager;
-    public GraphManager graphManager;
     private float maxEdgeLength;
     private float edgeLength;
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
     private List<Vector3> pathPositions;
     private float pitch;
-    private int cost = 0;
-    public int Cost
+    private Edge edge;
+    public Edge Edge
     {
-        get => cost;
+        get => edge;
         set
         {
-            cost = value;
-            lineType = availableCosts.IndexOf(cost);
+            edge = value;
+            Cost = edge.Cost;
+            IsCut = edge.IsCut;
+            OptimalCut = edge.OptimalCut;
+        }
+    }
+    public int Cost
+    {
+        get => edge.Cost;
+        set
+        {
+            edge.Cost = value;
+            lineType = availableCosts.IndexOf(edge.Cost);
             if (lineType == -1)
             {
                 lineType = 0;
@@ -43,29 +53,33 @@ public class EdgeRenderer : MonoBehaviour
             pitch = availablePitches[lineType];
         }
     }
-    private bool isCut = false;
+    // private bool isCut = false;
     public bool IsCut
     {
-        get => isCut;
+        get => edge.IsCut;
         set
         {
-            if (isCut != value)
-                graphManager.updateScoreText(value, cost);
-            isCut = value;
+            if (edge.IsCut != value)
+            {
+                edge.IsCut = value;
+                graphManager.updateScoreText(value, edge.Cost);
+                graphManager.updateConnectedComponents(edge);
+            }
             Color color = lineRenderer.startColor;
-            float alpha = isCut ? 0.3f : 1f; // half-transparent if cut
+            float alpha = edge.IsCut ? 0.3f : 1f; // half-transparent if cut
             color.a = alpha;
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;
+            
         }
     }
-    private bool optimalCut = true;
+    // private bool optimalCut = true;
     public bool OptimalCut
     {
-        get => optimalCut;
+        get => edge.OptimalCut;
         set
         {
-            optimalCut = value;
+            edge.OptimalCut = value;
         }
     }
 
@@ -91,7 +105,6 @@ public class EdgeRenderer : MonoBehaviour
     void Update()
     {
         pathPositions = cutPathManager.GetPathPositions();
-        // Debug.Log(pathPositions.Count);
         if (pathPositions.Count >= 2)
             ProcessTouch();
         else if (pathPositions.Count == 0 && dragging)
