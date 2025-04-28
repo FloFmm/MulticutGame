@@ -4,6 +4,7 @@ import numpy as np
 import json
 from gurobipy import GRB
 from typing import List
+from networkx.drawing.nx_agraph import graphviz_layout
 
 
 def solve_multicut(graph: nx.Graph, costs: dict, log: bool = True):
@@ -70,6 +71,7 @@ def generate_graphs_and_multicuts(
     output_path: str,
     cost_probs: List[float],
     available_costs: List[int],
+    edge_prob: float,
 ):
     """
     Generate n graphs and solve the multicut problem for each.
@@ -81,21 +83,22 @@ def generate_graphs_and_multicuts(
 
     for _ in range(n):
         # Generate random positions for nodes
-        positions = {
-            i: (np.random.random(), np.random.random()) for i in range(graph_size)
-        }
+        # positions = {
+        #     i: (np.random.random(), np.random.random()) for i in range(graph_size)
+        # }
         graph = nx.Graph()
-        graph.add_nodes_from(positions)
+        graph.add_nodes_from(range(graph_size))
 
         # Add random edges between nodes
         edges = []
         for i in graph.nodes:
             for j in graph.nodes:
                 if (
-                    i < j and np.random.random() < 0.00
+                    i < j and np.random.random() < edge_prob
                 ):  # 80% chance to connect any two nodes
-                    edges.append((i, j))
-        graph.add_edges_from(edges)
+                    # edges.append((i, j))
+                    graph.add_edge(i, j, minlen=300)
+        # graph.add_edges_from(edges)
 
         # Check if the graph is connected, if not, add edges to connect it
         if not nx.is_connected(graph):
@@ -106,9 +109,10 @@ def generate_graphs_and_multicuts(
                 # Find the first pair of nodes from different components
                 u, v = list(comp1)[0], list(comp2)[0]
                 # Add an edge to connect them
-                graph.add_edge(u, v)
+                graph.add_edge(u, v, minlen=300)
                 components = list(nx.connected_components(graph))
 
+        positions = graphviz_layout(graph, prog="neato")
         nx.set_node_attributes(graph, positions, "pos")
 
         # Generate random edge costs
@@ -151,12 +155,19 @@ def main():
     output_path = "Assets/Resources/graphs.json"
     n = 5  # number of graphs to generate
     graph_size = 15  # number of nodes per graph
+    # TODO remove nodes that are:
+    # 1) too close to another node
+    # 2) too close to an edge
+    # 3) too far away from the cluster centre
+    # TODO set min edge len more clever or remove too short edges
+    # TODO scale the graph stronger where more nodes are, less strongly in sparse regions too make clustered regions less clustered
     generate_graphs_and_multicuts(
         n,
         graph_size,
         output_path,
         cost_probs=[0.1, 0.1, 0, 0, 0.8],
         available_costs=[-2, -1, 0, 1, 2],
+        edge_prob=3.0 / graph_size,
     )
 
 

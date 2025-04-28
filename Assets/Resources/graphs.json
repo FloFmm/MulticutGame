@@ -5,106 +5,106 @@
                 {
                     "Id": 0,
                     "Position": {
-                        "x": 0.2412529925793021,
-                        "y": 0.16155376402105126
+                        "x": 119.56,
+                        "y": 96.012
                     }
                 },
                 {
                     "Id": 1,
                     "Position": {
-                        "x": 0.39752962168955963,
-                        "y": 0.41986977024227334
+                        "x": 120.13,
+                        "y": 157.7
                     }
                 },
                 {
                     "Id": 2,
                     "Position": {
-                        "x": 0.12543949639075236,
-                        "y": 0.2560001432397606
+                        "x": 183.89,
+                        "y": 48.486
                     }
                 },
                 {
                     "Id": 3,
                     "Position": {
-                        "x": 0.6692098036417193,
-                        "y": 0.29243364890208934
+                        "x": 143.09,
+                        "y": 225.99
                     }
                 },
                 {
                     "Id": 4,
                     "Position": {
-                        "x": 0.01518210149898458,
-                        "y": 0.31563199717119483
+                        "x": 66.236,
+                        "y": 172.7
                     }
                 },
                 {
                     "Id": 5,
                     "Position": {
-                        "x": 0.28170776798006236,
-                        "y": 0.6924887147752391
+                        "x": 195.38,
+                        "y": 118.9
                     }
                 },
                 {
                     "Id": 6,
                     "Position": {
-                        "x": 0.3450038087198505,
-                        "y": 0.9170895590253558
+                        "x": 328.55,
+                        "y": 18.0
                     }
                 },
                 {
                     "Id": 7,
                     "Position": {
-                        "x": 0.33928224866350587,
-                        "y": 0.5273102385127535
+                        "x": 66.755,
+                        "y": 146.35
                     }
                 },
                 {
                     "Id": 8,
                     "Position": {
-                        "x": 0.9345274868080584,
-                        "y": 0.8336037484491278
+                        "x": 261.15,
+                        "y": 145.93
                     }
                 },
                 {
                     "Id": 9,
                     "Position": {
-                        "x": 0.47428799356305484,
-                        "y": 0.16355934484270263
+                        "x": 199.44,
+                        "y": 197.16
                     }
                 },
                 {
                     "Id": 10,
                     "Position": {
-                        "x": 0.8548357019295902,
-                        "y": 0.2953065220507398
+                        "x": 107.1,
+                        "y": 240.0
                     }
                 },
                 {
                     "Id": 11,
                     "Position": {
-                        "x": 0.1743883507392675,
-                        "y": 0.3312850639240773
+                        "x": 266.81,
+                        "y": 62.014
                     }
                 },
                 {
                     "Id": 12,
                     "Position": {
-                        "x": 0.8193888333660989,
-                        "y": 0.611621245198915
+                        "x": 27.0,
+                        "y": 217.37
                     }
                 },
                 {
                     "Id": 13,
                     "Position": {
-                        "x": 0.7738433845881928,
-                        "y": 0.1672932667284175
+                        "x": 124.04,
+                        "y": 305.47
                     }
                 },
                 {
                     "Id": 14,
                     "Position": {
-                        "x": 0.2729863408608789,
-                        "y": 0.18076851934545612
+                        "x": 121.55,
+                        "y": 380.18
                     }
                 }
             ],
@@ -117,50 +117,127 @@
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 1,
+                    "FromNodeId": 0,
                     "ToNodeId": 2,
                     "Cost": -2,
                     "IsCut": false,
                     "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 2,
-                    "ToNodeId": 3,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 3,
+                    "FromNodeId": 0,
                     "ToNodeId": 4,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 4,
+                    "FromNodeId": 0,
                     "ToNodeId": 5,
                     "Cost": 2,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 5,
-                    "ToNodeId": 6,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 6,
+                    "FromNodeId": 0,
                     "ToNodeId": 7,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 7,
+                    "FromNodeId": 1,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 4,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 5,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 11,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 9,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": true
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 13,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 10,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 12,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 5,
                     "ToNodeId": 8,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 5,
+                    "ToNodeId": 9,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
+                    "ToNodeId": 11,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 7,
+                    "ToNodeId": 12,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
@@ -168,6 +245,13 @@
                 {
                     "FromNodeId": 8,
                     "ToNodeId": 9,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 8,
+                    "ToNodeId": 11,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
@@ -175,226 +259,247 @@
                 {
                     "FromNodeId": 9,
                     "ToNodeId": 10,
-                    "Cost": 2,
+                    "Cost": -2,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 },
                 {
                     "FromNodeId": 10,
-                    "ToNodeId": 11,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 11,
                     "ToNodeId": 12,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 12,
+                    "FromNodeId": 10,
                     "ToNodeId": 13,
-                    "Cost": -1,
+                    "Cost": -2,
                     "IsCut": false,
                     "OptimalCut": true
                 },
                 {
                     "FromNodeId": 13,
                     "ToNodeId": 14,
-                    "Cost": 2,
+                    "Cost": -1,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 }
             ],
-            "OptimalCost": -3.0
+            "OptimalCost": -4.0
         },
         {
             "Nodes": [
                 {
                     "Id": 0,
                     "Position": {
-                        "x": 0.18443986564691528,
-                        "y": 0.7853351478166735
+                        "x": 177.27,
+                        "y": 86.481
                     }
                 },
                 {
                     "Id": 1,
                     "Position": {
-                        "x": 0.8539752926394888,
-                        "y": 0.4942368373819278
+                        "x": 83.199,
+                        "y": 208.71
                     }
                 },
                 {
                     "Id": 2,
                     "Position": {
-                        "x": 0.846561485357468,
-                        "y": 0.079645477009061
+                        "x": 100.81,
+                        "y": 134.0
                     }
                 },
                 {
                     "Id": 3,
                     "Position": {
-                        "x": 0.505246090121704,
-                        "y": 0.06528650438687811
+                        "x": 225.7,
+                        "y": 18.0
                     }
                 },
                 {
                     "Id": 4,
                     "Position": {
-                        "x": 0.42812232759738944,
-                        "y": 0.09653091566061256
+                        "x": 306.33,
+                        "y": 110.41
                     }
                 },
                 {
                     "Id": 5,
                     "Position": {
-                        "x": 0.12715997170127746,
-                        "y": 0.5967453089785958
+                        "x": 257.96,
+                        "y": 305.17
                     }
                 },
                 {
                     "Id": 6,
                     "Position": {
-                        "x": 0.22601200060423587,
-                        "y": 0.10694568430998297
+                        "x": 181.77,
+                        "y": 142.49
                     }
                 },
                 {
                     "Id": 7,
                     "Position": {
-                        "x": 0.2203062070705597,
-                        "y": 0.34982628500329926
+                        "x": 306.68,
+                        "y": 29.363
                     }
                 },
                 {
                     "Id": 8,
                     "Position": {
-                        "x": 0.46778748458230024,
-                        "y": 0.20174322626496533
+                        "x": 27.0,
+                        "y": 101.7
                     }
                 },
                 {
                     "Id": 9,
                     "Position": {
-                        "x": 0.6404067252149148,
-                        "y": 0.48306983555175165
+                        "x": 375.43,
+                        "y": 273.51
                     }
                 },
                 {
                     "Id": 10,
                     "Position": {
-                        "x": 0.5052367200185491,
-                        "y": 0.3868926511185593
+                        "x": 193.1,
+                        "y": 262.97
                     }
                 },
                 {
                     "Id": 11,
                     "Position": {
-                        "x": 0.7936374544415771,
-                        "y": 0.5800041788778066
+                        "x": 249.77,
+                        "y": 175.61
                     }
                 },
                 {
                     "Id": 12,
                     "Position": {
-                        "x": 0.16229859850231387,
-                        "y": 0.7007523466071562
+                        "x": 303.59,
+                        "y": 241.22
                     }
                 },
                 {
                     "Id": 13,
                     "Position": {
-                        "x": 0.9645510800892552,
-                        "y": 0.5000083611702167
+                        "x": 117.88,
+                        "y": 255.77
                     }
                 },
                 {
                     "Id": 14,
                     "Position": {
-                        "x": 0.8895200639461449,
-                        "y": 0.34161365267110966
+                        "x": 162.26,
+                        "y": 185.83
                     }
                 }
             ],
             "Edges": [
                 {
                     "FromNodeId": 0,
-                    "ToNodeId": 1,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 1,
-                    "ToNodeId": 2,
-                    "Cost": -2,
-                    "IsCut": false,
-                    "OptimalCut": true
-                },
-                {
-                    "FromNodeId": 2,
                     "ToNodeId": 3,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 3,
-                    "ToNodeId": 4,
+                    "FromNodeId": 0,
+                    "ToNodeId": 14,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 14,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 4,
-                    "ToNodeId": 5,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 5,
+                    "FromNodeId": 2,
                     "ToNodeId": 6,
                     "Cost": 2,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 6,
-                    "ToNodeId": 7,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 7,
+                    "FromNodeId": 2,
                     "ToNodeId": 8,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 8,
-                    "ToNodeId": 9,
+                    "FromNodeId": 2,
+                    "ToNodeId": 14,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 9,
+                    "FromNodeId": 3,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 11,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 5,
                     "ToNodeId": 10,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 10,
+                    "FromNodeId": 5,
+                    "ToNodeId": 12,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
                     "ToNodeId": 11,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
+                    "ToNodeId": 14,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true
+                },
+                {
+                    "FromNodeId": 9,
+                    "ToNodeId": 12,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 10,
+                    "ToNodeId": 14,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true
                 },
                 {
                     "FromNodeId": 11,
@@ -404,9 +509,9 @@
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 12,
-                    "ToNodeId": 13,
-                    "Cost": -1,
+                    "FromNodeId": 11,
+                    "ToNodeId": 14,
+                    "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": true
                 },
@@ -418,134 +523,176 @@
                     "OptimalCut": false
                 }
             ],
-            "OptimalCost": -3.0
+            "OptimalCost": 0.0
         },
         {
             "Nodes": [
                 {
                     "Id": 0,
                     "Position": {
-                        "x": 0.18443986564691528,
-                        "y": 0.7853351478166735
+                        "x": 171.29,
+                        "y": 182.4
                     }
                 },
                 {
                     "Id": 1,
                     "Position": {
-                        "x": 0.8539752926394888,
-                        "y": 0.4942368373819278
+                        "x": 199.0,
+                        "y": 18.0
                     }
                 },
                 {
                     "Id": 2,
                     "Position": {
-                        "x": 0.846561485357468,
-                        "y": 0.079645477009061
+                        "x": 258.23,
+                        "y": 185.24
                     }
                 },
                 {
                     "Id": 3,
                     "Position": {
-                        "x": 0.505246090121704,
-                        "y": 0.06528650438687811
+                        "x": 27.0,
+                        "y": 157.53
                     }
                 },
                 {
                     "Id": 4,
                     "Position": {
-                        "x": 0.42812232759738944,
-                        "y": 0.09653091566061256
+                        "x": 90.645,
+                        "y": 183.34
                     }
                 },
                 {
                     "Id": 5,
                     "Position": {
-                        "x": 0.12715997170127746,
-                        "y": 0.5967453089785958
+                        "x": 356.22,
+                        "y": 303.47
                     }
                 },
                 {
                     "Id": 6,
                     "Position": {
-                        "x": 0.22601200060423587,
-                        "y": 0.10694568430998297
+                        "x": 208.21,
+                        "y": 262.65
                     }
                 },
                 {
                     "Id": 7,
                     "Position": {
-                        "x": 0.2203062070705597,
-                        "y": 0.34982628500329926
+                        "x": 118.04,
+                        "y": 253.99
                     }
                 },
                 {
                     "Id": 8,
                     "Position": {
-                        "x": 0.46778748458230024,
-                        "y": 0.20174322626496533
+                        "x": 189.72,
+                        "y": 97.471
                     }
                 },
                 {
                     "Id": 9,
                     "Position": {
-                        "x": 0.6404067252149148,
-                        "y": 0.48306983555175165
+                        "x": 289.05,
+                        "y": 262.85
                     }
                 },
                 {
                     "Id": 10,
                     "Position": {
-                        "x": 0.5052367200185491,
-                        "y": 0.3868926511185593
+                        "x": 105.12,
+                        "y": 128.12
                     }
                 },
                 {
                     "Id": 11,
                     "Position": {
-                        "x": 0.7936374544415771,
-                        "y": 0.5800041788778066
+                        "x": 154.57,
+                        "y": 325.42
                     }
                 },
                 {
                     "Id": 12,
                     "Position": {
-                        "x": 0.16229859850231387,
-                        "y": 0.7007523466071562
+                        "x": 138.2,
+                        "y": 401.97
                     }
                 },
                 {
                     "Id": 13,
                     "Position": {
-                        "x": 0.9645510800892552,
-                        "y": 0.5000083611702167
+                        "x": 325.94,
+                        "y": 139.68
                     }
                 },
                 {
                     "Id": 14,
                     "Position": {
-                        "x": 0.8895200639461449,
-                        "y": 0.34161365267110966
+                        "x": 37.585,
+                        "y": 233.62
                     }
                 }
             ],
             "Edges": [
                 {
                     "FromNodeId": 0,
-                    "ToNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 4,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 6,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 10,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 8,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
                     "FromNodeId": 1,
-                    "ToNodeId": 2,
-                    "Cost": -2,
+                    "ToNodeId": 8,
+                    "Cost": 2,
                     "IsCut": false,
-                    "OptimalCut": true
+                    "OptimalCut": false
                 },
                 {
                     "FromNodeId": 2,
-                    "ToNodeId": 3,
+                    "ToNodeId": 9,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 13,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
@@ -555,53 +702,60 @@
                     "ToNodeId": 4,
                     "Cost": 2,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 4,
-                    "ToNodeId": 5,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 5,
-                    "ToNodeId": 6,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 6,
-                    "ToNodeId": 7,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 7,
-                    "ToNodeId": 8,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 8,
-                    "ToNodeId": 9,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 9,
+                    "FromNodeId": 3,
                     "ToNodeId": 10,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 10,
+                    "FromNodeId": 3,
+                    "ToNodeId": 14,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 14,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true
+                },
+                {
+                    "FromNodeId": 5,
+                    "ToNodeId": 9,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
+                    "ToNodeId": 9,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
                     "ToNodeId": 11,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 7,
+                    "ToNodeId": 11,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 7,
+                    "ToNodeId": 14,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
@@ -612,129 +766,115 @@
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 12,
-                    "ToNodeId": 13,
-                    "Cost": -1,
-                    "IsCut": false,
-                    "OptimalCut": true
-                },
-                {
-                    "FromNodeId": 13,
-                    "ToNodeId": 14,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
                 }
             ],
-            "OptimalCost": -3.0
+            "OptimalCost": -1.0
         },
         {
             "Nodes": [
                 {
                     "Id": 0,
                     "Position": {
-                        "x": 0.18443986564691528,
-                        "y": 0.7853351478166735
+                        "x": 109.19,
+                        "y": 239.83
                     }
                 },
                 {
                     "Id": 1,
                     "Position": {
-                        "x": 0.8539752926394888,
-                        "y": 0.4942368373819278
+                        "x": 155.88,
+                        "y": 321.62
                     }
                 },
                 {
                     "Id": 2,
                     "Position": {
-                        "x": 0.846561485357468,
-                        "y": 0.079645477009061
+                        "x": 241.68,
+                        "y": 87.648
                     }
                 },
                 {
                     "Id": 3,
                     "Position": {
-                        "x": 0.505246090121704,
-                        "y": 0.06528650438687811
+                        "x": 176.39,
+                        "y": 270.92
                     }
                 },
                 {
                     "Id": 4,
                     "Position": {
-                        "x": 0.42812232759738944,
-                        "y": 0.09653091566061256
+                        "x": 341.7,
+                        "y": 294.67
                     }
                 },
                 {
                     "Id": 5,
                     "Position": {
-                        "x": 0.12715997170127746,
-                        "y": 0.5967453089785958
+                        "x": 88.551,
+                        "y": 153.56
                     }
                 },
                 {
                     "Id": 6,
                     "Position": {
-                        "x": 0.22601200060423587,
-                        "y": 0.10694568430998297
+                        "x": 153.07,
+                        "y": 174.34
                     }
                 },
                 {
                     "Id": 7,
                     "Position": {
-                        "x": 0.2203062070705597,
-                        "y": 0.34982628500329926
+                        "x": 234.65,
+                        "y": 296.81
                     }
                 },
                 {
                     "Id": 8,
                     "Position": {
-                        "x": 0.46778748458230024,
-                        "y": 0.20174322626496533
+                        "x": 154.95,
+                        "y": 98.521
                     }
                 },
                 {
                     "Id": 9,
                     "Position": {
-                        "x": 0.6404067252149148,
-                        "y": 0.48306983555175165
+                        "x": 99.419,
+                        "y": 307.73
                     }
                 },
                 {
                     "Id": 10,
                     "Position": {
-                        "x": 0.5052367200185491,
-                        "y": 0.3868926511185593
+                        "x": 227.51,
+                        "y": 202.36
                     }
                 },
                 {
                     "Id": 11,
                     "Position": {
-                        "x": 0.7936374544415771,
-                        "y": 0.5800041788778066
+                        "x": 27.0,
+                        "y": 251.46
                     }
                 },
                 {
                     "Id": 12,
                     "Position": {
-                        "x": 0.16229859850231387,
-                        "y": 0.7007523466071562
+                        "x": 276.13,
+                        "y": 18.0
                     }
                 },
                 {
                     "Id": 13,
                     "Position": {
-                        "x": 0.9645510800892552,
-                        "y": 0.5000083611702167
+                        "x": 272.22,
+                        "y": 251.06
                     }
                 },
                 {
                     "Id": 14,
                     "Position": {
-                        "x": 0.8895200639461449,
-                        "y": 0.34161365267110966
+                        "x": 284.19,
+                        "y": 163.65
                     }
                 }
             ],
@@ -747,246 +887,330 @@
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 1,
-                    "ToNodeId": 2,
+                    "FromNodeId": 0,
+                    "ToNodeId": 3,
                     "Cost": -2,
                     "IsCut": false,
-                    "OptimalCut": true
-                },
-                {
-                    "FromNodeId": 2,
-                    "ToNodeId": 3,
-                    "Cost": 2,
-                    "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 3,
-                    "ToNodeId": 4,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 4,
+                    "FromNodeId": 0,
                     "ToNodeId": 5,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 5,
+                    "FromNodeId": 0,
                     "ToNodeId": 6,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 6,
-                    "ToNodeId": 7,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 7,
-                    "ToNodeId": 8,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 8,
+                    "FromNodeId": 0,
                     "ToNodeId": 9,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 9,
-                    "ToNodeId": 10,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 10,
+                    "FromNodeId": 0,
                     "ToNodeId": 11,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 11,
+                    "FromNodeId": 1,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 8,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
                     "ToNodeId": 12,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 12,
+                    "FromNodeId": 2,
+                    "ToNodeId": 14,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 9,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 13,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 4,
                     "ToNodeId": 13,
                     "Cost": -1,
                     "IsCut": false,
                     "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 13,
+                    "FromNodeId": 5,
+                    "ToNodeId": 8,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
+                    "ToNodeId": 8,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 6,
+                    "ToNodeId": 10,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 7,
+                    "ToNodeId": 10,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 7,
+                    "ToNodeId": 13,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 10,
                     "ToNodeId": 14,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 13,
+                    "ToNodeId": 14,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": false
                 }
             ],
-            "OptimalCost": -3.0
+            "OptimalCost": -1.0
         },
         {
             "Nodes": [
                 {
                     "Id": 0,
                     "Position": {
-                        "x": 0.18443986564691528,
-                        "y": 0.7853351478166735
+                        "x": 199.55,
+                        "y": 96.504
                     }
                 },
                 {
                     "Id": 1,
                     "Position": {
-                        "x": 0.8539752926394888,
-                        "y": 0.4942368373819278
+                        "x": 27.0,
+                        "y": 305.19
                     }
                 },
                 {
                     "Id": 2,
                     "Position": {
-                        "x": 0.846561485357468,
-                        "y": 0.079645477009061
+                        "x": 245.4,
+                        "y": 167.4
                     }
                 },
                 {
                     "Id": 3,
                     "Position": {
-                        "x": 0.505246090121704,
-                        "y": 0.06528650438687811
+                        "x": 164.25,
+                        "y": 47.3
                     }
                 },
                 {
                     "Id": 4,
                     "Position": {
-                        "x": 0.42812232759738944,
-                        "y": 0.09653091566061256
+                        "x": 122.98,
+                        "y": 86.458
                     }
                 },
                 {
                     "Id": 5,
                     "Position": {
-                        "x": 0.12715997170127746,
-                        "y": 0.5967453089785958
+                        "x": 109.84,
+                        "y": 148.34
                     }
                 },
                 {
                     "Id": 6,
                     "Position": {
-                        "x": 0.22601200060423587,
-                        "y": 0.10694568430998297
+                        "x": 90.267,
+                        "y": 261.51
                     }
                 },
                 {
                     "Id": 7,
                     "Position": {
-                        "x": 0.2203062070705597,
-                        "y": 0.34982628500329926
+                        "x": 156.73,
+                        "y": 212.16
                     }
                 },
                 {
                     "Id": 8,
                     "Position": {
-                        "x": 0.46778748458230024,
-                        "y": 0.20174322626496533
+                        "x": 222.99,
+                        "y": 18.0
                     }
                 },
                 {
                     "Id": 9,
                     "Position": {
-                        "x": 0.6404067252149148,
-                        "y": 0.48306983555175165
+                        "x": 147.2,
+                        "y": 290.52
                     }
                 },
                 {
                     "Id": 10,
                     "Position": {
-                        "x": 0.5052367200185491,
-                        "y": 0.3868926511185593
+                        "x": 369.86,
+                        "y": 260.81
                     }
                 },
                 {
                     "Id": 11,
                     "Position": {
-                        "x": 0.7936374544415771,
-                        "y": 0.5800041788778066
+                        "x": 321.03,
+                        "y": 126.84
                     }
                 },
                 {
                     "Id": 12,
                     "Position": {
-                        "x": 0.16229859850231387,
-                        "y": 0.7007523466071562
+                        "x": 173.28,
+                        "y": 146.89
                     }
                 },
                 {
                     "Id": 13,
                     "Position": {
-                        "x": 0.9645510800892552,
-                        "y": 0.5000083611702167
+                        "x": 303.96,
+                        "y": 222.33
                     }
                 },
                 {
                     "Id": 14,
                     "Position": {
-                        "x": 0.8895200639461449,
-                        "y": 0.34161365267110966
+                        "x": 238.17,
+                        "y": 220.18
                     }
                 }
             ],
             "Edges": [
                 {
                     "FromNodeId": 0,
-                    "ToNodeId": 1,
+                    "ToNodeId": 2,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 1,
-                    "ToNodeId": 2,
+                    "FromNodeId": 0,
+                    "ToNodeId": 4,
                     "Cost": -2,
                     "IsCut": false,
-                    "OptimalCut": true
-                },
-                {
-                    "FromNodeId": 2,
-                    "ToNodeId": 3,
-                    "Cost": 2,
-                    "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 3,
-                    "ToNodeId": 4,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 4,
+                    "FromNodeId": 0,
                     "ToNodeId": 5,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 5,
+                    "FromNodeId": 0,
+                    "ToNodeId": 8,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 1,
                     "ToNodeId": 6,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 7,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 11,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 13,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 8,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 12,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 12,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 5,
+                    "ToNodeId": 7,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
@@ -994,51 +1218,44 @@
                 {
                     "FromNodeId": 6,
                     "ToNodeId": 7,
-                    "Cost": 2,
+                    "Cost": -1,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 7,
-                    "ToNodeId": 8,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 8,
+                    "FromNodeId": 6,
                     "ToNodeId": 9,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 9,
-                    "ToNodeId": 10,
-                    "Cost": 2,
+                    "FromNodeId": 7,
+                    "ToNodeId": 9,
+                    "Cost": -1,
                     "IsCut": false,
-                    "OptimalCut": false
+                    "OptimalCut": true
                 },
                 {
-                    "FromNodeId": 10,
-                    "ToNodeId": 11,
-                    "Cost": 2,
-                    "IsCut": false,
-                    "OptimalCut": false
-                },
-                {
-                    "FromNodeId": 11,
+                    "FromNodeId": 7,
                     "ToNodeId": 12,
                     "Cost": 2,
                     "IsCut": false,
                     "OptimalCut": false
                 },
                 {
-                    "FromNodeId": 12,
+                    "FromNodeId": 10,
                     "ToNodeId": 13,
-                    "Cost": -1,
+                    "Cost": 2,
                     "IsCut": false,
-                    "OptimalCut": true
+                    "OptimalCut": false
+                },
+                {
+                    "FromNodeId": 12,
+                    "ToNodeId": 14,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false
                 },
                 {
                     "FromNodeId": 13,
@@ -1048,7 +1265,7 @@
                     "OptimalCut": false
                 }
             ],
-            "OptimalCost": -3.0
+            "OptimalCost": -2.0
         }
     ]
 }

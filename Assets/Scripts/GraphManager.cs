@@ -8,7 +8,6 @@ public class GraphManager : MonoBehaviour
     public GameObject nodePrefab;
     public GameObject edgePrefab;
     public TextMeshProUGUI scoreText;
-    
     private List<GameObject> edges = new List<GameObject>();
     private GraphList CurrentGraphList;
     public Graph currentGraph;
@@ -60,8 +59,16 @@ public class GraphManager : MonoBehaviour
 
         // Step 3: Calculate scale factor to fit graph into screen (with slight padding)
         float padding = 0.9f;
-        float scaleX = screenWorldWidth / graphWidth * padding;
-        float scaleY = screenWorldHeight / graphHeight * padding;
+        float scaleX, scaleY;
+        if (graphWidth != 0)
+            scaleX = screenWorldWidth / graphWidth * padding;
+        else
+            scaleX = 1.0f;
+
+        if (graphHeight != 0)    
+            scaleY = screenWorldHeight / graphHeight * padding;
+        else
+            scaleY = 1.0f;
         float scale = Mathf.Min(scaleX, scaleY); // keep aspect ratio
 
         // Step 4: Centering offset
@@ -73,7 +80,7 @@ public class GraphManager : MonoBehaviour
         {
             // Normalize, scale, and center
             Vector2 localPos = node.Position - graphCenter;
-            Vector2 scaledPos = localPos * scale;
+            Vector2 scaledPos = new Vector2(localPos.x * scaleX, localPos.y * scaleY);
             Vector3 worldPos = new Vector3(screenCenter.x + scaledPos.x, screenCenter.y + scaledPos.y, 0f);
 
             GameObject nodeObj = Instantiate(nodePrefab, worldPos, Quaternion.identity);
