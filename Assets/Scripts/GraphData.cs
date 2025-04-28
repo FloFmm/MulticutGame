@@ -18,6 +18,7 @@ public class Edge
     public int Cost;
     public bool IsCut;
     public bool OptimalCut;
+    public bool IsSpecial = false;
 }
 
 [Serializable]
@@ -26,6 +27,7 @@ public class Graph
     public List<Node> Nodes = new();
     public List<Edge> Edges = new();
     public int OptimalCost;
+    public float Difficulty;
 }
 
 [Serializable]
