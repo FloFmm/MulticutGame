@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro; // Needed for TextMeshPro
 using System;
+using System.Linq;
 
 public class GraphManager : MonoBehaviour
 {
@@ -13,16 +14,22 @@ public class GraphManager : MonoBehaviour
     public Graph currentGraph;
     private int currentScore = 0;
     private Dictionary<int, GameObject> nodeIdToGameObjectMap;
-    private int numComponents;
+    HashSet<int> componentIds = new HashSet<int>();
     void Start()
     {
+        
         CurrentGraphList = GraphStorage.LoadGraphs();
         if (CurrentGraphList.Graphs.Count > 0)
         {
-            currentScore = 0;
-            currentGraph = CurrentGraphList.Graphs[0];
-            scoreText.text = $"0 / {currentGraph.OptimalCost}";
-            numComponents = MulticutLogic.AssignConnectedComponents(currentGraph);
+            string selectedGraphName = GameData.SelectedGraphName;
+            currentGraph = CurrentGraphList.Graphs.FirstOrDefault(graph => graph.Name == selectedGraphName);
+            currentScore = currentGraph.BestAchievedCost;
+            scoreText.text = $"0 / {-currentGraph.OptimalCost}";
+            int numComponents = MulticutLogic.AssignConnectedComponents(currentGraph);
+            for (int i = 0; i < numComponents; i++)
+            {
+                componentIds.Add(i);
+            }
             GenerateGraph(); // Use the first graph in the list
             updateConnectedComponents();
         }
@@ -53,7 +60,7 @@ public class GraphManager : MonoBehaviour
 
         // Step 2: Determine screen size in world units
         Vector3 bottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10f));
-        Vector3 topRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 10f));
+        Vector3 topRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height*0.9f, 10f));
         float screenWorldWidth = topRight.x - bottomLeft.x;
         float screenWorldHeight = topRight.y - bottomLeft.y;
 
@@ -102,6 +109,7 @@ public class GraphManager : MonoBehaviour
         {
             int id1 = nodeIdToGameObjectMap[edge.FromNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
             int id2 = nodeIdToGameObjectMap[edge.ToNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
+            // id1 must be smaller than id2
             if (id1 > id2)
             {
                 int tmp = id1;
@@ -109,43 +117,43 @@ public class GraphManager : MonoBehaviour
                 id2 = tmp;
             }
             Graph subgraph = MulticutLogic.FilterGraphByComponentIds(currentGraph, new List<int> {id1, id2});
-            int numComponentsNew = MulticutLogic.AssignConnectedComponents(subgraph);
-            if (numComponentsNew == 1)
+            int numComponentsSubgraph = MulticutLogic.AssignConnectedComponents(subgraph);
+            if (numComponentsSubgraph == 1 && id1!=id2)
             {
-                if (id1!=id2)
-                    numComponents -= 1;
-                // nothing happened or two components were joined
+                // two components were joined
                 foreach (var node in subgraph.Nodes)
                 {
                     node.ConnectedComponentId = id1;
+                    componentIds.Remove(id2);
                 }
             }
-            else if (numComponentsNew == 2)
+            else if (numComponentsSubgraph == 2 && id1 == id2)
             {
-                if (id1 == id2)
-                    numComponents += 1;
-                // nothing happened or two components were seperated
+                // two components were seperated
+                // smallest id that is available 
+                int candidate = 0;
+                while (componentIds.Contains(candidate))
+                    candidate++;
+                componentIds.Add(candidate);
                 foreach (var node in subgraph.Nodes)
                 {
                     if (node.ConnectedComponentId == 0)
-                    {
                         node.ConnectedComponentId = id1;
-                    }
                     else
                     {
                         if (id1!=id2)
                             node.ConnectedComponentId = id2;
                         else
-                            node.ConnectedComponentId = numComponents - 1;
+                        {
+                            node.ConnectedComponentId = candidate;
+                            
+                        }
                     }
                 }
             }
-            else
-                throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsNew}", nameof(numComponentsNew));
+            else if (numComponentsSubgraph != 1 && numComponentsSubgraph != 2)
+                throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsSubgraph}", nameof(numComponentsSubgraph));
 
-        }
-        else{
-            numComponents = MulticutLogic.AssignConnectedComponents(currentGraph);
         }
         
         foreach (var node in currentGraph.Nodes)
@@ -155,6 +163,26 @@ public class GraphManager : MonoBehaviour
             if (nodeRenderer.ConnectedComponentId != node.ConnectedComponentId)
                 nodeRenderer.ConnectedComponentId = node.ConnectedComponentId;
         }
+        Debug.Log("Set contains: " + string.Join(", ", componentIds));
+    }
+
+    public bool isValidMulticut()
+    {
+        foreach (var edge in currentGraph.Edges)
+        {
+            if (edge.IsCut)
+            {
+                int id1 = nodeIdToGameObjectMap[edge.FromNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
+                int id2 = nodeIdToGameObjectMap[edge.ToNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
+                if (id1 == id2)
+                {
+                    // Debug.Log(nodeIdToGameObjectMap[edge.FromNodeId].GetComponent<NodeRenderer>());
+                    Debug.Log(id1);
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void updateScoreText(bool isCut, int cost)
@@ -163,7 +191,18 @@ public class GraphManager : MonoBehaviour
             currentScore += cost;
         else
             currentScore -= cost;
-        scoreText.text = $"{currentScore} / {currentGraph.OptimalCost}";
+
+        
+        if (isValidMulticut())
+        {
+            scoreText.color = Color.white;
+            scoreText.text = $"{-currentScore} / {-currentGraph.OptimalCost}";
+        }
+        else
+        {
+            scoreText.color = Color.red;
+            scoreText.text = $"{-currentScore} / {-currentGraph.OptimalCost} INVALID!";
+        }
     }
 
 

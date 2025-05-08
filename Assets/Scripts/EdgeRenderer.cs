@@ -62,11 +62,11 @@ public class EdgeRenderer : MonoBehaviour
             if (edge.IsCut != value)
             {
                 edge.IsCut = value;
-                graphManager.updateScoreText(value, edge.Cost);
                 graphManager.updateConnectedComponents(edge);
+                graphManager.updateScoreText(value, edge.Cost);
             }
             Color color = lineRenderer.startColor;
-            float alpha = edge.IsCut ? 0.3f : 1f; // half-transparent if cut
+            float alpha = edge.IsCut ? 0.05f : 1f; // transparent if cut
             color.a = alpha;
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;

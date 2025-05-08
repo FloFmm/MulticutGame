@@ -27,7 +27,9 @@ public class Graph
     public List<Node> Nodes = new();
     public List<Edge> Edges = new();
     public int OptimalCost;
+    public int BestAchievedCost;
     public float Difficulty;
+    public string Name;
 }
 
 [Serializable]

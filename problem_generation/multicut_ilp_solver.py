@@ -211,7 +211,7 @@ def generate_graphs_and_multicuts(
     :param graph_size: number of nodes per graph.
     """
     graphs_data = []
-    for _ in range(num_graphs):
+    while len(graphs_data) < num_graphs:
         graph_size = random.randint(*graph_size_range)
         density = random.uniform(*density_range)
         average_kardinality = random.uniform(*average_kardinality_range)
@@ -275,31 +275,33 @@ def generate_graphs_and_multicuts(
             costs[u, v] = available_costs[cost_index]
 
         # Solve the multicut problem for the graph
-        multicut, obj = solve_multicut(graph, costs)
+        multicut, optimal_cost = solve_multicut(graph, costs)
 
-        graph_data = {
-            "Nodes": [
-                {"Id": node_id, "Position": {"x": x, "y": y}}
-                for node_id, (x, y) in nx.get_node_attributes(graph, "pos").items()
-            ],
-            "Edges": [
-                {
-                    "FromNodeId": u,
-                    "ToNodeId": v,
-                    "Cost": costs[u, v],
-                    "IsCut": False,
-                    "OptimalCut": (True if multicut.get((u, v), 0) == 1 else False),
-                    "IsSpecial": (
-                        True
-                        if (u, v) in special_edges or (v, u) in special_edges
-                        else False
-                    ),
-                }
-                for u, v in graph.edges()
-            ],
-            "OptimalCost": obj,
-        }
-        graphs_data.append(graph_data)
+        if optimal_cost < 0:
+            graph_data = {
+                "Nodes": [
+                    {"Id": node_id, "Position": {"x": x, "y": y}}
+                    for node_id, (x, y) in nx.get_node_attributes(graph, "pos").items()
+                ],
+                "Edges": [
+                    {
+                        "FromNodeId": u,
+                        "ToNodeId": v,
+                        "Cost": costs[u, v],
+                        "IsCut": False,
+                        "OptimalCut": (True if multicut.get((u, v), 0) == 1 else False),
+                        "IsSpecial": (
+                            True
+                            if (u, v) in special_edges or (v, u) in special_edges
+                            else False
+                        ),
+                    }
+                    for u, v in graph.edges()
+                ],
+                "OptimalCost": optimal_cost,
+                "BestAchievedCost": 0,
+            }
+            graphs_data.append(graph_data)
 
     # Prepare data for C# serialization
     min_max_stats = {}
@@ -309,19 +311,23 @@ def generate_graphs_and_multicuts(
     min_max_stats["max_edges"] = max([len(g["Edges"]) for g in graphs_data])
     min_max_stats["min_special_edges"] = num_special_edges_range[0]
     min_max_stats["max_special_edges"] = num_special_edges_range[1]
-    min_max_stats["max_num_cut_edges"] = min(
+    min_max_stats["max_num_cut_edges"] = max(
         [len([e for e in g["Edges"] if e["OptimalCut"]]) for g in graphs_data]
     )
-    min_max_stats["max_num_cut_edges_with_positive_cost"] = min(
+    min_max_stats["max_num_cut_edges_with_positive_cost"] = max(
         [
             len([e for e in g["Edges"] if e["OptimalCut"] and e["Cost"] > 0])
             for g in graphs_data
         ]
     )
-
+    print("min_max_stats", min_max_stats)
     for graph_data in graphs_data:
         difficulty = calc_level_difficulty(graph_data, min_max_stats)
         graph_data["Difficulty"] = difficulty
+
+    graphs_data = sorted(graphs_data, key=lambda x: x["Difficulty"])
+    for idx, graph in enumerate(graphs_data, start=1):
+        graph["Name"] = str(idx)
 
     # Save to a JSON file
     with open(output_path, "w") as f:
@@ -331,7 +337,7 @@ def generate_graphs_and_multicuts(
 def main():
     output_path = "Assets/Resources/graphs.json"
     generate_graphs_and_multicuts(
-        num_graphs=1,
+        num_graphs=100,
         graph_size_range=(5, 20),
         output_path=output_path,
         cost_probs_ranges=[
