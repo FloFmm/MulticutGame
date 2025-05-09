@@ -10,36 +10,23 @@ public class GraphManager : MonoBehaviour
     public GameObject edgePrefab;
     public TextMeshProUGUI scoreText;
     private List<GameObject> edges = new List<GameObject>();
-    private GraphList CurrentGraphList;
-    public Graph currentGraph;
     private int currentScore = 0;
     private Dictionary<int, GameObject> nodeIdToGameObjectMap;
     HashSet<int> componentIds = new HashSet<int>();
+
     void Start()
     {
-        
-        CurrentGraphList = GraphStorage.LoadGraphs();
-        if (CurrentGraphList.Graphs.Count > 0)
+        currentScore = GameData.SelectedGraph.BestAchievedCost;
+        scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost}";
+        int numComponents = MulticutLogic.AssignConnectedComponents(GameData.SelectedGraph);
+        for (int i = 0; i < numComponents; i++)
         {
-            string selectedGraphName = GameData.SelectedGraphName;
-            currentGraph = CurrentGraphList.Graphs.FirstOrDefault(graph => graph.Name == selectedGraphName);
-            currentScore = currentGraph.BestAchievedCost;
-            scoreText.text = $"0 / {-currentGraph.OptimalCost}";
-            int numComponents = MulticutLogic.AssignConnectedComponents(currentGraph);
-            for (int i = 0; i < numComponents; i++)
-            {
-                componentIds.Add(i);
-            }
-            GenerateGraph(); // Use the first graph in the list
-            updateConnectedComponents();
+            componentIds.Add(i);
         }
-        else
-        {
-            Debug.LogError("No graphs found in the loaded data.");
-        }
+        GenerateGraph();
+        updateConnectedComponents();
     }
 
-    // public List<GameObject> GetEdges() => edges;void Start()
     void GenerateGraph()
     {
         nodeIdToGameObjectMap = new Dictionary<int, GameObject>();
@@ -47,7 +34,7 @@ public class GraphManager : MonoBehaviour
         float minX = float.MaxValue, maxX = float.MinValue;
         float minY = float.MaxValue, maxY = float.MinValue;
 
-        foreach (var node in currentGraph.Nodes)
+        foreach (var node in GameData.SelectedGraph.Nodes)
         {
             if (node.Position.x < minX) minX = node.Position.x;
             if (node.Position.x > maxX) maxX = node.Position.x;
@@ -65,7 +52,7 @@ public class GraphManager : MonoBehaviour
         float screenWorldHeight = topRight.y - bottomLeft.y;
 
         // Step 3: Calculate scale factor to fit graph into screen (with slight padding)
-        float padding = 0.9f;
+        float padding = 0.8f;
         float scaleX, scaleY;
         if (graphWidth != 0)
             scaleX = screenWorldWidth / graphWidth * padding;
@@ -83,7 +70,7 @@ public class GraphManager : MonoBehaviour
         Vector2 screenCenter = new Vector2((bottomLeft.x + topRight.x) / 2f, (bottomLeft.y + topRight.y) / 2f);
 
         // Step 5: Instantiate nodes
-        foreach (var node in currentGraph.Nodes)
+        foreach (var node in GameData.SelectedGraph.Nodes)
         {
             // Normalize, scale, and center
             Vector2 localPos = node.Position - graphCenter;
@@ -95,7 +82,7 @@ public class GraphManager : MonoBehaviour
         }
 
         // Step 6: Instantiate edges
-        foreach (var edge in currentGraph.Edges)
+        foreach (var edge in GameData.SelectedGraph.Edges)
         {
             GameObject nodeA = nodeIdToGameObjectMap[edge.FromNodeId];
             GameObject nodeB = nodeIdToGameObjectMap[edge.ToNodeId];
@@ -116,15 +103,15 @@ public class GraphManager : MonoBehaviour
                 id1 = id2;
                 id2 = tmp;
             }
-            Graph subgraph = MulticutLogic.FilterGraphByComponentIds(currentGraph, new List<int> {id1, id2});
+            Graph subgraph = MulticutLogic.FilterGraphByComponentIds(GameData.SelectedGraph, new List<int> {id1, id2});
             int numComponentsSubgraph = MulticutLogic.AssignConnectedComponents(subgraph);
             if (numComponentsSubgraph == 1 && id1!=id2)
             {
                 // two components were joined
+                componentIds.Remove(id2);
                 foreach (var node in subgraph.Nodes)
                 {
                     node.ConnectedComponentId = id1;
-                    componentIds.Remove(id2);
                 }
             }
             else if (numComponentsSubgraph == 2 && id1 == id2)
@@ -153,33 +140,28 @@ public class GraphManager : MonoBehaviour
             }
             else if (numComponentsSubgraph != 1 && numComponentsSubgraph != 2)
                 throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsSubgraph}", nameof(numComponentsSubgraph));
-
+            Debug.Log(string.Join(", ", componentIds));
         }
         
-        foreach (var node in currentGraph.Nodes)
+        foreach (var node in GameData.SelectedGraph.Nodes)
         {
             GameObject nodeObj = nodeIdToGameObjectMap[node.Id];
             NodeRenderer nodeRenderer = nodeObj.GetComponent<NodeRenderer>();
             if (nodeRenderer.ConnectedComponentId != node.ConnectedComponentId)
                 nodeRenderer.ConnectedComponentId = node.ConnectedComponentId;
         }
-        Debug.Log("Set contains: " + string.Join(", ", componentIds));
     }
 
     public bool isValidMulticut()
     {
-        foreach (var edge in currentGraph.Edges)
+        foreach (var edge in GameData.SelectedGraph.Edges)
         {
             if (edge.IsCut)
             {
                 int id1 = nodeIdToGameObjectMap[edge.FromNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
                 int id2 = nodeIdToGameObjectMap[edge.ToNodeId].GetComponent<NodeRenderer>().ConnectedComponentId;
                 if (id1 == id2)
-                {
-                    // Debug.Log(nodeIdToGameObjectMap[edge.FromNodeId].GetComponent<NodeRenderer>());
-                    Debug.Log(id1);
                     return false;
-                }
             }
         }
         return true;
@@ -195,13 +177,18 @@ public class GraphManager : MonoBehaviour
         
         if (isValidMulticut())
         {
+            if (currentScore < GameData.SelectedGraph.BestAchievedCost) 
+            {
+                GameData.SelectedGraph.BestAchievedCost = currentScore;
+                GameData.SaveGraphListToPlayerPrefs();
+            }
             scoreText.color = Color.white;
-            scoreText.text = $"{-currentScore} / {-currentGraph.OptimalCost}";
+            scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost}";
         }
         else
         {
             scoreText.color = Color.red;
-            scoreText.text = $"{-currentScore} / {-currentGraph.OptimalCost} INVALID!";
+            scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost} INVALID!";
         }
     }
 

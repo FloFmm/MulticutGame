@@ -6,7 +6,6 @@ public class NodeRenderer : MonoBehaviour
     // public Node node;
     public List<Color> availableColors;
     private SpriteRenderer spriteRenderer;
-    // private int lastComponentId = -1;
     private int connectedComponentId = -1;
     public int ConnectedComponentId
     {
@@ -29,16 +28,5 @@ public class NodeRenderer : MonoBehaviour
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // int currentId = node.ConnectedComponentId;
-        // if (currentId != lastComponentId)
-        // {
-        //     spriteRenderer.color = availableColors[currentId];
-        //     lastComponentId = currentId;
-        // }
     }
 }

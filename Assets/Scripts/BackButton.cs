@@ -16,6 +16,7 @@ public class BackButton : MonoBehaviour
         else if (currentScene == "GameScene")
         {
             // Load the LevelSelection scene
+            GameData.LoadGraphList();
             SceneManager.LoadScene("LevelSelection");
         }
         else 

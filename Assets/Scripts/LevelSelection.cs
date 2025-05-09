@@ -8,14 +8,7 @@ public class LevelSelection : MonoBehaviour {
     public Transform contentParent; // Assign Content of Scroll View
     public List<Color> availableColors; // Assign colors in inspector (should have 5 for 5 buckets)
     void Start() {
-        TextAsset jsonFile = Resources.Load<TextAsset>("graphs");
-        if (jsonFile == null)
-        {
-            Debug.LogError("Graph file not found in Resources.");
-            return;
-        }
-        GraphList graphList =  JsonUtility.FromJson<GraphList>(jsonFile.text);
-        foreach (Graph graph in graphList.Graphs) {
+        foreach (Graph graph in GameData.GraphList.Graphs) {
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = graph.Name;
             
@@ -33,12 +26,12 @@ public class LevelSelection : MonoBehaviour {
                 image.color = availableColors[colorIndex];
             
             // Optional: add a click handler
-            newButton.GetComponent<Button>().onClick.AddListener(() => OnLevelSelected(graph.Name));
+            newButton.GetComponent<Button>().onClick.AddListener(() => OnLevelSelected(graph));
         }
     }
 
-    void OnLevelSelected(string graphName) {
-        GameData.SelectedGraphName = graphName;
+    void OnLevelSelected(Graph graph) {
+        GameData.SelectedGraph = graph;
         SceneManager.LoadScene("GameScene");
     }
 }
