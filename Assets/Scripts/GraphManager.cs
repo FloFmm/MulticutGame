@@ -23,8 +23,8 @@ public class GraphManager : MonoBehaviour
         {
             componentIds.Add(i);
         }
-        Debug.Log("on start:");
-        Debug.Log(string.Join(", ", componentIds));
+        // Debug.Log("on start:");
+        // Debug.Log(string.Join(", ", componentIds));
         GenerateGraph();
         updateConnectedComponents();
     }
@@ -150,7 +150,7 @@ public class GraphManager : MonoBehaviour
             }
             else if (numComponentsSubgraph != 1 && numComponentsSubgraph != 2)
                 throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsSubgraph}", nameof(numComponentsSubgraph));
-            Debug.Log(string.Join(", ", componentIds));
+            // Debug.Log(string.Join(", ", componentIds));
         }
         
         foreach (var node in GameData.SelectedGraph.Nodes)

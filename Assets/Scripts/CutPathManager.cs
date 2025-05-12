@@ -4,15 +4,14 @@ using System.Collections.Generic;
 
 public class CutPathManager : MonoBehaviour
 {
+    public GraphManager graphManager;
     private LineRenderer lineRenderer;
-    private List<Vector3> pathPositions;
     private Touchscreen touchscreen;
 
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 0;
-        pathPositions = new List<Vector3>();
         touchscreen = Touchscreen.current;
         lineRenderer.startWidth = 5.0f;  // Set the thickness at the start of the line
         lineRenderer.endWidth = 5.0f;
@@ -27,9 +26,19 @@ public class CutPathManager : MonoBehaviour
         }
 
         // Optionally handle touch/mouse end
-        if ((touchscreen != null && !touchscreen.primaryTouch.press.isPressed && pathPositions.Count > 0)) 
+        if ((touchscreen != null && !touchscreen.primaryTouch.press.isPressed && GameData.LastCutPathPositions.Count > 0)) 
         {
-            pathPositions.Clear();  // Reset the path for the next input
+            if (!graphManager.isValidMulticut())
+            {
+                // reset invalid cuts
+                foreach (GameObject edgeObj in GameData.LastCutEdges)
+                {
+                    EdgeRenderer edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
+                    edgeRenderer.IsCut = !edgeRenderer.IsCut;
+                }
+            }
+            GameData.LastCutPathPositions.Clear();  // Reset the path for the next input
+            GameData.LastCutEdges.Clear();  // Reset the path for the next input
             lineRenderer.positionCount = 0;  // Optionally clear the line
         }
     }
@@ -39,11 +48,11 @@ public class CutPathManager : MonoBehaviour
         Vector2 touchPosition = touchscreen.primaryTouch.position.ReadValue();
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, 10f));
 
-        if (pathPositions.Count == 0 || pathPositions[pathPositions.Count - 1] != worldPos)
-            pathPositions.Add(worldPos);
+        if (GameData.LastCutPathPositions.Count == 0 || GameData.LastCutPathPositions[GameData.LastCutPathPositions.Count - 1] != worldPos)
+            GameData.LastCutPathPositions.Add(worldPos);
 
-        lineRenderer.positionCount = pathPositions.Count;
-        lineRenderer.SetPositions(pathPositions.ToArray());
+        lineRenderer.positionCount = GameData.LastCutPathPositions.Count;
+        lineRenderer.SetPositions(GameData.LastCutPathPositions.ToArray());
     }
 
     private void HandleMouseInput()
@@ -51,15 +60,10 @@ public class CutPathManager : MonoBehaviour
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 10f));
 
-        if (pathPositions.Count == 0 || pathPositions[pathPositions.Count - 1] != worldPos)
-            pathPositions.Add(worldPos);
+        if (GameData.LastCutPathPositions.Count == 0 || GameData.LastCutPathPositions[GameData.LastCutPathPositions.Count - 1] != worldPos)
+            GameData.LastCutPathPositions.Add(worldPos);
 
-        lineRenderer.positionCount = pathPositions.Count;
-        lineRenderer.SetPositions(pathPositions.ToArray());
-    }
-
-    public List<Vector3> GetPathPositions()
-    {
-        return pathPositions;
+        lineRenderer.positionCount = GameData.LastCutPathPositions.Count;
+        lineRenderer.SetPositions(GameData.LastCutPathPositions.ToArray());
     }
 }

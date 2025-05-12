@@ -8,7 +8,8 @@ public class EdgeRenderer : MonoBehaviour
     public Transform pointB;            // Endpoint B
     public LineRenderer lineRenderer;   // The LineRenderer for drawing the edge
     public float touchThreshold;   // How close the finger must be to one of the segments to drag the middle point
-    public float maxEdgeLengthStretch;   // If the touch gets further than this from A or B, reset the middle point
+    // public float maxEdgeLengthStretch;   // If the touch gets further than this from A or B, reset the middle point
+    public float cutDistance;
     private float edgeWidth;
     public List<int> availableCosts;
     public List<float> availableEdgeWidths;
@@ -17,11 +18,10 @@ public class EdgeRenderer : MonoBehaviour
     public GraphManager graphManager;
     private int lineType;
     private CutPathManager cutPathManager;
-    private float maxEdgeLength;
+    // private float maxEdgeLength;
     private float edgeLength;
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
-    private List<Vector3> pathPositions;
     private float pitch;
     private Edge edge;
     public Edge Edge
@@ -95,7 +95,7 @@ public class EdgeRenderer : MonoBehaviour
     {
         // Initialize the middle point at the center between A and B.
         midPoint = (pointA.position + pointB.position) * 0.5f;
-        maxEdgeLength = maxEdgeLengthStretch * Vector3.Distance(pointA.position, pointB.position);
+        // maxEdgeLength = maxEdgeLengthStretch * Vector3.Distance(pointA.position, pointB.position);
         lineRenderer.positionCount = 3;
         lineRenderer.SetPosition(0, pointA.position);
         lineRenderer.SetPosition(1, midPoint);
@@ -104,25 +104,27 @@ public class EdgeRenderer : MonoBehaviour
 
     void Update()
     {
-        pathPositions = cutPathManager.GetPathPositions();
-        if (pathPositions.Count >= 2)
+        if (GameData.LastCutPathPositions.Count >= 2)
             ProcessTouch();
-        else if (pathPositions.Count == 0 && dragging)
+        else if (GameData.LastCutPathPositions.Count == 0 && dragging)
             ResetMiddlePoint();
     }
 
     // Process the current touch (or mouse) position.
     void ProcessTouch()
     {
-        Vector2 lastPoint = pathPositions[pathPositions.Count - 1];
-        Vector2 secondLastPoint = pathPositions[pathPositions.Count - 2];
+        Vector2 lastPoint = GameData.LastCutPathPositions[GameData.LastCutPathPositions.Count - 1];
+        Vector2 secondLastPoint = GameData.LastCutPathPositions[GameData.LastCutPathPositions.Count - 2];
         float distSegment1 = DistancePointToLine(lastPoint, pointA.position, midPoint);
         float distSegment2 = DistancePointToLine(lastPoint, midPoint, pointB.position);
         if (lineSegmentsIntersect(pointA.position, midPoint, secondLastPoint, lastPoint) || lineSegmentsIntersect(pointB.position, midPoint, secondLastPoint, lastPoint) || distSegment1 < touchThreshold || distSegment2 < touchThreshold)
         {
-            midPoint = lastPoint;
-            dragging = true;
-            UpdateLine();
+            if ((GameData.ScissorIsActive && !IsCut) || (!GameData.ScissorIsActive && IsCut))
+            {
+                midPoint = lastPoint;
+                dragging = true;
+                UpdateLine();
+            }
         }
         else if (dragging)
         {
@@ -144,10 +146,12 @@ public class EdgeRenderer : MonoBehaviour
         lineRenderer.SetPosition(1, midPoint);
         if (dragging) // if the touch is far from either endpoint, reset the middle point.
         {
-            edgeLength = Vector3.Distance(pointA.position, midPoint) + Vector3.Distance(midPoint, pointB.position);
-            if (edgeLength > maxEdgeLength)
+            // edgeLength = Vector3.Distance(pointA.position, midPoint) + Vector3.Distance(midPoint, pointB.position);
+            // if (edgeLength > maxEdgeLength)
+            if (DistancePointToLine(midPoint, pointA.position, pointB.position) > cutDistance)
             {
                 ResetMiddlePoint();
+                GameData.LastCutEdges.Add(this.gameObject);
                 IsCut = !IsCut;
             }
         }

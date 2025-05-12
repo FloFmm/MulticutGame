@@ -1,16 +1,22 @@
 using UnityEngine;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 public static class GameData
 {
     public static GraphList GraphList;
     public static Graph SelectedGraph;
+    public static bool ScissorIsActive; // toggle between scissor and rubber
+    public static List<Vector3> LastCutPathPositions;
+    public static List<GameObject> LastCutEdges;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Init()
     {
         LoadGraphList();
+        LastCutPathPositions = new List<Vector3>();
+        LastCutEdges = new List<GameObject>();
     }
 
     public static void SaveGraphListToPlayerPrefs()

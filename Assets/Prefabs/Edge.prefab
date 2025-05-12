@@ -50,7 +50,7 @@ MonoBehaviour:
   pointB: {fileID: 0}
   lineRenderer: {fileID: 2879204654193666907}
   touchThreshold: 10
-  maxEdgeLengthStretch: 1.01
+  cutDistance: 15
   availableCosts: 9cfffffffeffffffffffffff00000000010000000200000064000000
   availableEdgeWidths:
   - 5
