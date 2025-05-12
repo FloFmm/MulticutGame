@@ -23,6 +23,8 @@ public class GraphManager : MonoBehaviour
         {
             componentIds.Add(i);
         }
+        Debug.Log("on start:");
+        Debug.Log(string.Join(", ", componentIds));
         GenerateGraph();
         updateConnectedComponents();
     }
@@ -105,23 +107,31 @@ public class GraphManager : MonoBehaviour
             }
             Graph subgraph = MulticutLogic.FilterGraphByComponentIds(GameData.SelectedGraph, new List<int> {id1, id2});
             int numComponentsSubgraph = MulticutLogic.AssignConnectedComponents(subgraph);
-            if (numComponentsSubgraph == 1 && id1!=id2)
+            if (numComponentsSubgraph == 1)
             {
-                // two components were joined
-                componentIds.Remove(id2);
+                
+                if (id1!=id2)
+                {
+                    // two components were joined
+                    componentIds.Remove(id2);
+                }
+                
                 foreach (var node in subgraph.Nodes)
                 {
                     node.ConnectedComponentId = id1;
                 }
             }
-            else if (numComponentsSubgraph == 2 && id1 == id2)
+            else if (numComponentsSubgraph == 2)
             {
-                // two components were seperated
-                // smallest id that is available 
                 int candidate = 0;
-                while (componentIds.Contains(candidate))
-                    candidate++;
-                componentIds.Add(candidate);
+                if (id1 == id2)
+                {
+                    // two components were seperated
+                    // smallest id that is available 
+                    while (componentIds.Contains(candidate))
+                        candidate++;
+                    componentIds.Add(candidate);
+                }
                 foreach (var node in subgraph.Nodes)
                 {
                     if (node.ConnectedComponentId == 0)
@@ -132,8 +142,8 @@ public class GraphManager : MonoBehaviour
                             node.ConnectedComponentId = id2;
                         else
                         {
+                            // two components were seperated
                             node.ConnectedComponentId = candidate;
-                            
                         }
                     }
                 }

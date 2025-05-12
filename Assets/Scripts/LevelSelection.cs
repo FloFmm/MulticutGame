@@ -31,6 +31,7 @@ public class LevelSelection : MonoBehaviour {
     }
 
     void OnLevelSelected(Graph graph) {
+        
         GameData.SelectedGraph = graph;
         SceneManager.LoadScene("GameScene");
     }

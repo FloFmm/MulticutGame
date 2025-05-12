@@ -298,7 +298,7 @@ def generate_graphs_and_multicuts(
                     }
                     for u, v in graph.edges()
                 ],
-                "OptimalCost": optimal_cost,
+                "OptimalCost": int(optimal_cost),
                 "BestAchievedCost": 0,
             }
             graphs_data.append(graph_data)
