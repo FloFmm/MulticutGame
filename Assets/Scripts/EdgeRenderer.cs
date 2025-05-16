@@ -11,14 +11,9 @@ public class EdgeRenderer : MonoBehaviour
     // public float maxEdgeLengthStretch;   // If the touch gets further than this from A or B, reset the middle point
     public float cutDistance;
     private float edgeWidth;
-    public List<int> availableCosts;
-    public List<float> availableEdgeWidths;
-    public List<Color> availableColors;
-    public List<float> availablePitches;
     public GraphManager graphManager;
     private int lineType;
     private CutPathManager cutPathManager;
-    // private float maxEdgeLength;
     private float edgeLength;
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
@@ -41,16 +36,16 @@ public class EdgeRenderer : MonoBehaviour
         set
         {
             edge.Cost = value;
-            lineType = availableCosts.IndexOf(edge.Cost);
+            lineType = GameData.edgeCosts.IndexOf(edge.Cost);
             if (lineType == -1)
             {
                 lineType = 0;
             }
-            lineRenderer.startWidth = availableEdgeWidths[lineType];
-            lineRenderer.endWidth = availableEdgeWidths[lineType];
-            lineRenderer.startColor = availableColors[lineType];
-            lineRenderer.endColor = availableColors[lineType];
-            pitch = availablePitches[lineType];
+            lineRenderer.startWidth = GameData.edgeWidths[lineType];
+            lineRenderer.endWidth = GameData.edgeWidths[lineType];
+            lineRenderer.startColor = GameData.ColorPalette.edgeColors[lineType];
+            lineRenderer.endColor = GameData.ColorPalette.edgeColors[lineType];
+            pitch = GameData.edgePitches[lineType];
         }
     }
     // private bool isCut = false;
@@ -70,7 +65,6 @@ public class EdgeRenderer : MonoBehaviour
             color.a = alpha;
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;
-            
         }
     }
     // private bool optimalCut = true;

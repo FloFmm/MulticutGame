@@ -10,10 +10,18 @@ public static class GameData
     public static bool ScissorIsActive; // toggle between scissor and rubber
     public static List<Vector3> LastCutPathPositions;
     public static List<GameObject> LastCutEdges;
+    public static ColorPalette ColorPalette => _palette ??= Resources.Load<ColorPalette>("GlobalColorPalette");
+    private static ColorPalette _palette;
+    public static readonly List<int> edgeCosts = new List<int> {-2, -1, 0, 1, 2};
+    public static readonly List<float> edgeWidths = new List<float> {6f, 6f, 6f, 6f, 6f};
+    public static readonly List<float> edgePitches = new List<float> {0.2f, 0.55f, 0.9f, 1.25f, 1.6f};
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Init()
     {
+        // This ensures _palette is loaded once early
+        _ = ColorPalette;
+
         LoadGraphList();
         LastCutPathPositions = new List<Vector3>();
         LastCutEdges = new List<GameObject>();

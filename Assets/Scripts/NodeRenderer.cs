@@ -4,7 +4,6 @@ using System.Collections.Generic;
 public class NodeRenderer : MonoBehaviour
 {
     // public Node node;
-    public List<Color> availableColors;
     private SpriteRenderer spriteRenderer;
     private int connectedComponentId = -1;
     public int ConnectedComponentId
@@ -13,9 +12,9 @@ public class NodeRenderer : MonoBehaviour
         set
         {
             connectedComponentId = value;
-            if (connectedComponentId >= 0 && connectedComponentId < availableColors.Count)
+            if (connectedComponentId >= 0 && connectedComponentId < GameData.ColorPalette.nodeColors.Count)
             {
-                spriteRenderer.color = availableColors[connectedComponentId];
+                spriteRenderer.color = GameData.ColorPalette.nodeColors[connectedComponentId];
             }
             else
             {

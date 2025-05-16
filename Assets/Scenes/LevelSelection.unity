@@ -423,7 +423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3449529684230938371, guid: f4ce69059de7abbb5870adb8fe295d6e, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3449529684230938371, guid: f4ce69059de7abbb5870adb8fe295d6e, type: 3}
       propertyPath: m_AnchorMax.y
@@ -431,7 +431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3449529684230938371, guid: f4ce69059de7abbb5870adb8fe295d6e, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3449529684230938371, guid: f4ce69059de7abbb5870adb8fe295d6e, type: 3}
       propertyPath: m_AnchorMin.y
@@ -475,7 +475,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3449529684230938371, guid: f4ce69059de7abbb5870adb8fe295d6e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -123
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 3449529684230938371, guid: f4ce69059de7abbb5870adb8fe295d6e, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -919,12 +919,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonPrefab: {fileID: 7490338194405318846, guid: 4aac573746f9869758045b150d8fa119, type: 3}
   contentParent: {fileID: 1942997918}
-  availableColors:
-  - {r: 0.91764706, g: 0.30980393, b: 0.21176471, a: 1}
-  - {r: 0.9843137, g: 0.41960785, b: 0.11372549, a: 1}
-  - {r: 0.9764706, g: 0.7607843, b: 0.16862746, a: 1}
-  - {r: 0.8352941, g: 0.8784314, b: 0.29411766, a: 1}
-  - {r: 0.5686275, g: 0.85882354, b: 0.4117647, a: 1}
 --- !u!4 &1961811668
 Transform:
   m_ObjectHideFlags: 0
