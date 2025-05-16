@@ -11,8 +11,7 @@ public class MainMenu : MonoBehaviour
 
     public void OnClickChallenges()
     {
-        Debug.Log("Challenges clicked");
-        // Load challenges scene or open a panel
+        SceneManager.LoadScene("ChallengeSelection");
     }
 
     public void OnClickLeaderboard()

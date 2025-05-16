@@ -1,0 +1,58 @@
+{
+    "Challenges": [
+        {
+            "Name": "Easy",
+            "TimeLimit": 10,
+            "AddRemainingTime": true,
+            "MinDifficulty": 0.0,
+            "MaxDifficulty": 0.1,
+            "HighScore": 0,
+            "LevelCount": 5
+        },
+        {
+            "Name": "Medium",
+            "TimeLimit": 15,
+            "AddRemainingTime": true,
+            "MinDifficulty": 0.1,
+            "MaxDifficulty": 0.2,
+            "HighScore": 0,
+            "LevelCount": 5
+        },
+        {
+            "Name": "Hard",
+            "TimeLimit": 20,
+            "AddRemainingTime": true,
+            "MinDifficulty": 0.2,
+            "MaxDifficulty": 0.4,
+            "HighScore": 0,
+            "LevelCount": 5
+        },
+        {
+            "Name": "Extreme",
+            "TimeLimit": 25,
+            "AddRemainingTime": true,
+            "MinDifficulty": 0.4,
+            "MaxDifficulty": 0.5,
+            "HighScore": 0,
+            "LevelCount": 5
+        },
+        {
+            "Name": "Not Funny Anymore",
+            "TimeLimit": 25,
+            "AddRemainingTime": true,
+            "MinDifficulty": 0.6,
+            "MaxDifficulty": 0.8,
+            "HighScore": 0,
+            "LevelCount": 5
+        },
+        {
+            "Name": "Never",
+            "TimeLimit": 25,
+            "AddRemainingTime": true,
+            "MinDifficulty": 0.8,
+            "MaxDifficulty": 1.0,
+            "HighScore": 0,
+            "LevelCount": 5
+        }
+    ]
+}

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using TMPro; // Needed for TextMeshPro
 using System;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class GraphManager : MonoBehaviour
 {
     public GameObject nodePrefab;
     public GameObject edgePrefab;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI countdownText;
+    private float startTime;
     private List<GameObject> edges = new List<GameObject>();
     private int currentScore = 0;
     private Dictionary<int, GameObject> nodeIdToGameObjectMap;
@@ -16,6 +19,18 @@ public class GraphManager : MonoBehaviour
 
     void Start()
     {
+        if (GameData.SelectedChallenge != null)
+        {
+            // challenge Mode
+            GameData.SelectedGraph = GameData.SelectedChallengeGraphList[GameData.SelectedChallengeGraphIndex];
+            countdownText.gameObject.SetActive(true);
+            startTime = Time.time;
+        }
+        else
+        {
+            countdownText.gameObject.SetActive(false);
+        }
+
         currentScore = GameData.SelectedGraph.BestAchievedCost;
         scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost}";
         int numComponents = MulticutLogic.AssignConnectedComponents(GameData.SelectedGraph);
@@ -27,6 +42,15 @@ public class GraphManager : MonoBehaviour
         // Debug.Log(string.Join(", ", componentIds));
         GenerateGraph();
         updateConnectedComponents();
+    }
+
+    void Update()
+    {
+        if (GameData.SelectedChallenge != null)
+        {
+            // challenge Mode
+            updateCountDown();
+        }
     }
 
     void GenerateGraph()
@@ -177,6 +201,28 @@ public class GraphManager : MonoBehaviour
         return true;
     }
 
+    public void updateCountDown()
+    {
+        float elapsed = Time.time - startTime;
+        float remainingTime = GameData.SelectedChallenge.TimeLimit - elapsed;
+
+        if (remainingTime <= 0)
+        {
+            remainingTime = 0;
+            SceneManager.LoadScene("ChallengeSelection");
+        }
+
+        countdownText.text = $"{remainingTime:F1}s";
+        if (remainingTime < 10)
+        {
+            countdownText.color = Color.red;
+        }
+        else
+        {
+            countdownText.color = Color.white;
+        }
+    }
+
     public void updateScoreText(bool isCut, int cost)
     {
         if (isCut)
@@ -184,14 +230,33 @@ public class GraphManager : MonoBehaviour
         else
             currentScore -= cost;
 
-        
+
         if (isValidMulticut())
         {
-            if (currentScore < GameData.SelectedGraph.BestAchievedCost) 
+            if (GameData.SelectedChallenge == null)
             {
-                GameData.SelectedGraph.BestAchievedCost = currentScore;
-                GameData.SaveGraphListToPlayerPrefs();
+                if (currentScore < GameData.SelectedGraph.BestAchievedCost)
+                {
+                    GameData.SelectedGraph.BestAchievedCost = currentScore;
+                    GameData.SaveGraphListToPlayerPrefs();
+                }
             }
+            else
+            {
+                if (currentScore == GameData.SelectedGraph.OptimalCost)
+                {
+                    if (GameData.SelectedChallengeGraphIndex == GameData.SelectedChallenge.LevelCount - 1)
+                    {
+                        SceneManager.LoadScene("ChallengeSelection");
+                    }
+                    else
+                    {
+                        GameData.SelectedChallengeGraphIndex += 1;
+                        SceneManager.LoadScene("GameScene");
+                    }
+                }
+            }
+
             scoreText.color = Color.white;
             scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost}";
         }

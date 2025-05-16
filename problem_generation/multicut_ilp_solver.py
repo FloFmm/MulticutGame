@@ -196,7 +196,6 @@ def is_valid_edge(u, v, graph: nx.Graph, is_special_edge: bool = False):
     for a, b in graph.edges:
         common = set((u, v)) & set((a, b))
         if len(common) == 1:
-
             common_point = common.pop()
             common_coord = get_node_pos_from_id(graph, common_point)
             a_or_b_point = a if b == common_point else b
@@ -321,13 +320,14 @@ def generate_graphs_and_multicuts(
                 num_special_edges = random.randint(*num_special_edges_range)
                 cost_probs = generate_random_prob_distribution(cost_probs_ranges)
 
-                num_columns = int((node_count / 2 / density) ** 0.5)
+                num_columns = math.ceil((node_count / 2 / density) ** 0.5)
                 # Step 1: Create grid positions
                 positions = [
                     (x, y) for x in range(num_columns) for y in range(2 * num_columns)
                 ]
                 # Step 2: Randomly select graph_size nodes
                 selected_positions = random.sample(positions, node_count)
+
                 # Add nodes with position attribute
                 graph = nx.Graph()
                 for idx, pos in enumerate(selected_positions):
@@ -349,14 +349,15 @@ def generate_graphs_and_multicuts(
                 # add a few special edges that can intersect
                 special_edges = []
                 random.shuffle(possible_pairs)
-                for i, (u, v) in enumerate(possible_pairs):
+                i = 0
+                for (u, v) in possible_pairs:
                     if i == num_special_edges:
                         break
                     if not is_valid_edge(u, v, graph, is_special_edge=True):
                         continue
                     graph.add_edge(u, v)
+                    i += 1
                     special_edges.append((u, v))
-                    
 
                 # Check if the graph is connected, if not, add edges to connect it
                 try_nr = 0
@@ -476,8 +477,8 @@ def generate_graphs_and_multicuts(
 def main():
     output_path = "Assets/Resources/graphs.json"
     generate_graphs_and_multicuts(
-        graph_count=10000,
-        graph_size_range=(5, 20),
+        graph_count=100000,
+        graph_size_range=(5, 30),
         output_path=output_path,
         cost_probs_ranges=[
             (0.05, 0.8),
@@ -487,7 +488,7 @@ def main():
             (0.05, 0.8),
         ],
         available_costs=[-2, -1, 0, 1, 2],
-        density_range=(0.1, 0.5),
+        density_range=(0.1, 0.7),
         average_kardinality_range=(1, 5),
         num_special_edges_range=(0, 3),
     )

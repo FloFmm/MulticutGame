@@ -33,8 +33,12 @@ public class CutPathManager : MonoBehaviour
                 // reset invalid cuts
                 foreach (GameObject edgeObj in GameData.LastCutEdges)
                 {
-                    EdgeRenderer edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
-                    edgeRenderer.IsCut = !edgeRenderer.IsCut;
+                    if (edgeObj != null)
+                    {
+                        // != null test is needed because of object destruction on scene change
+                        EdgeRenderer edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
+                        edgeRenderer.IsCut = !edgeRenderer.IsCut;
+                    }
                 }
             }
             GameData.LastCutPathPositions.Clear();  // Reset the path for the next input

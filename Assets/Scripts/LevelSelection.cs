@@ -30,7 +30,7 @@ public class LevelSelection : MonoBehaviour {
     }
 
     void OnLevelSelected(Graph graph) {
-        
+        GameData.SelectedChallenge = null;
         GameData.SelectedGraph = graph;
         SceneManager.LoadScene("GameScene");
     }
