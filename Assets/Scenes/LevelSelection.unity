@@ -366,7 +366,19 @@ MonoBehaviour:
   m_VerticalScrollbarSpacing: -3
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1961811667}
+        m_TargetAssemblyTypeName: LevelSelection, Assembly-CSharp
+        m_MethodName: OnScrollChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &568547831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -919,6 +931,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonPrefab: {fileID: 7490338194405318846, guid: 4aac573746f9869758045b150d8fa119, type: 3}
   contentParent: {fileID: 1942997918}
+  scrollRect: {fileID: 568547830}
 --- !u!4 &1961811668
 Transform:
   m_ObjectHideFlags: 0

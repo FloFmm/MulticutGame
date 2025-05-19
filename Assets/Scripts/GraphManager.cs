@@ -10,6 +10,7 @@ public class GraphManager : MonoBehaviour
     public GameObject nodePrefab;
     public GameObject edgePrefab;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI levelNameText;
     public TextMeshProUGUI countdownText;
     private float startTime;
     private List<GameObject> edges = new List<GameObject>();
@@ -32,7 +33,9 @@ public class GraphManager : MonoBehaviour
         }
 
         currentScore = GameData.SelectedGraph.BestAchievedCost;
-        scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost}";
+        scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
+        levelNameText.text = $"Level\n{GameData.SelectedGraph.Name}";
+
         int numComponents = MulticutLogic.AssignConnectedComponents(GameData.SelectedGraph);
         for (int i = 0; i < numComponents; i++)
         {
@@ -258,12 +261,12 @@ public class GraphManager : MonoBehaviour
             }
 
             scoreText.color = Color.white;
-            scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost}";
+            scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
         }
         else
         {
             scoreText.color = Color.red;
-            scoreText.text = $"{-currentScore} / {-GameData.SelectedGraph.OptimalCost} INVALID!";
+            scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost} INVALID!";
         }
     }
 

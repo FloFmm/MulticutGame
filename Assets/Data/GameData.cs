@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public static class GameData
 {
+    public static float levelSelectionScrollPosition = 0.0f;
     public static GraphList GraphList;
     public static ChallengeList ChallengeList;
     public static Graph SelectedGraph;
