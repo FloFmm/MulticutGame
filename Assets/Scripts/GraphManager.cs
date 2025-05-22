@@ -12,7 +12,6 @@ public class GraphManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelNameText;
     public TextMeshProUGUI countdownText;
-    private float startTime;
     private List<GameObject> edges = new List<GameObject>();
     private int currentScore = 0;
     private Dictionary<int, GameObject> nodeIdToGameObjectMap;
@@ -25,7 +24,9 @@ public class GraphManager : MonoBehaviour
             // challenge Mode
             GameData.SelectedGraph = GameData.SelectedChallengeGraphList[GameData.SelectedChallengeGraphIndex];
             countdownText.gameObject.SetActive(true);
-            startTime = Time.time;
+            if (GameData.SelectedChallengeGraphIndex == 0)
+                GameData.ChallengeStartTime = Time.time;
+            levelNameText.text = $"Level\n{GameData.SelectedChallengeGraphIndex + 1}\u00A0|\u00A0{GameData.SelectedChallengeGraphList.Count}";
         }
         else
         {
@@ -34,7 +35,7 @@ public class GraphManager : MonoBehaviour
 
         currentScore = GameData.SelectedGraph.BestAchievedCost;
         scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
-        levelNameText.text = $"Level\n{GameData.SelectedGraph.Name}";
+
 
         int numComponents = MulticutLogic.AssignConnectedComponents(GameData.SelectedGraph);
         for (int i = 0; i < numComponents; i++)
@@ -76,7 +77,7 @@ public class GraphManager : MonoBehaviour
 
         // Step 2: Determine screen size in world units
         Vector3 bottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10f));
-        Vector3 topRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height*0.9f, 10f));
+        Vector3 topRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height * 0.9f, 10f));
         float screenWorldWidth = topRight.x - bottomLeft.x;
         float screenWorldHeight = topRight.y - bottomLeft.y;
 
@@ -88,7 +89,7 @@ public class GraphManager : MonoBehaviour
         else
             scaleX = 1.0f;
 
-        if (graphHeight != 0)    
+        if (graphHeight != 0)
             scaleY = screenWorldHeight / graphHeight * padding;
         else
             scaleY = 1.0f;
@@ -132,17 +133,17 @@ public class GraphManager : MonoBehaviour
                 id1 = id2;
                 id2 = tmp;
             }
-            Graph subgraph = MulticutLogic.FilterGraphByComponentIds(GameData.SelectedGraph, new List<int> {id1, id2});
+            Graph subgraph = MulticutLogic.FilterGraphByComponentIds(GameData.SelectedGraph, new List<int> { id1, id2 });
             int numComponentsSubgraph = MulticutLogic.AssignConnectedComponents(subgraph);
             if (numComponentsSubgraph == 1)
             {
-                
-                if (id1!=id2)
+
+                if (id1 != id2)
                 {
                     // two components were joined
                     componentIds.Remove(id2);
                 }
-                
+
                 foreach (var node in subgraph.Nodes)
                 {
                     node.ConnectedComponentId = id1;
@@ -165,7 +166,7 @@ public class GraphManager : MonoBehaviour
                         node.ConnectedComponentId = id1;
                     else
                     {
-                        if (id1!=id2)
+                        if (id1 != id2)
                             node.ConnectedComponentId = id2;
                         else
                         {
@@ -179,7 +180,7 @@ public class GraphManager : MonoBehaviour
                 throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsSubgraph}", nameof(numComponentsSubgraph));
             // Debug.Log(string.Join(", ", componentIds));
         }
-        
+
         foreach (var node in GameData.SelectedGraph.Nodes)
         {
             GameObject nodeObj = nodeIdToGameObjectMap[node.Id];
@@ -206,8 +207,8 @@ public class GraphManager : MonoBehaviour
 
     public void updateCountDown()
     {
-        float elapsed = Time.time - startTime;
-        float remainingTime = GameData.SelectedChallenge.TimeLimit - elapsed;
+        float elapsed = Time.time - GameData.ChallengeStartTime;
+        float remainingTime = GameData.SelectedChallenge.TimeLimit + (GameData.SelectedChallengeGraphIndex + 1) * GameData.SelectedChallenge.TimePerLevel - elapsed;
 
         if (remainingTime <= 0)
         {
@@ -241,13 +242,22 @@ public class GraphManager : MonoBehaviour
                 if (currentScore < GameData.SelectedGraph.BestAchievedCost)
                 {
                     GameData.SelectedGraph.BestAchievedCost = currentScore;
-                    GameData.SaveGraphListToPlayerPrefs();
+                    GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
                 }
             }
             else
             {
                 if (currentScore == GameData.SelectedGraph.OptimalCost)
                 {
+                    // update challenge highscore
+                    var highScoreObj = GameData.GetHighScoreForChallenge(GameData.SelectedChallenge);
+                    if (GameData.SelectedChallengeGraphIndex + 1 > highScoreObj.HighScore)
+                    {
+                        highScoreObj.HighScore = GameData.SelectedChallengeGraphIndex + 1;
+                        GameData.SaveToPlayerPrefs("challengeHighScoreList", GameData.ChallengeHighScoreList);
+                    }
+
+                    // load next challenge level
                     if (GameData.SelectedChallengeGraphIndex == GameData.SelectedChallenge.LevelCount - 1)
                     {
                         SceneManager.LoadScene("ChallengeSelection");

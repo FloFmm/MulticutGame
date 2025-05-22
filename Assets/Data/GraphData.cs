@@ -9,7 +9,7 @@ public class Node
     public Vector2 Position;  // Add 2D position for each node
     public int ConnectedComponentId = -1;
 
-    public Node Clone()
+    public Node Copy()
     {
         return new Node
         {
@@ -30,7 +30,7 @@ public class Edge
     public bool OptimalCut;
     public bool IsSpecial = false;
 
-    public Edge Clone()
+    public Edge Copy()
     {
         return new Edge
         {
@@ -50,13 +50,50 @@ public class Graph
     public List<Node> Nodes = new();
     public List<Edge> Edges = new();
     public int OptimalCost;
-    public int BestAchievedCost;
+    public int BestAchievedCost = 0;
     public float Difficulty;
     public string Name;
+    public string CreatedAt;
+
+    public Graph DeepCopy()
+    {
+        Graph graphCopy = new Graph
+        {
+            OptimalCost = OptimalCost,
+            BestAchievedCost = BestAchievedCost,
+            Difficulty = Difficulty,
+            Name = Name,
+            CreatedAt = CreatedAt
+        };
+
+        foreach (var node in Nodes)
+        {
+            graphCopy.Nodes.Add(node.Copy());
+        }
+
+        foreach (var edge in Edges)
+        {
+            graphCopy.Edges.Add(edge.Copy());
+        }
+
+        return graphCopy;
+    }
 }
 
 [Serializable]
 public class GraphList
 {
     public List<Graph> Graphs = new();
+
+    public GraphList DeepCopy()
+    {
+        GraphList copy = new GraphList();
+
+        foreach (var graph in this.Graphs)
+        {
+            copy.Graphs.Add(graph.DeepCopy());
+        }
+
+        return copy;
+    }
 }

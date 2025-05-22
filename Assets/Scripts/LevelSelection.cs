@@ -9,7 +9,7 @@ public class LevelSelection : MonoBehaviour {
     public ScrollRect scrollRect;
     void Start()
     {
-        foreach (Graph graph in GameData.GraphList.Graphs)
+        foreach (Graph graph in GameData.GraphHighScoreList.Graphs)
         {
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = graph.Name;

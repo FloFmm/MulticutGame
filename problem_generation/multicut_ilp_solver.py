@@ -8,6 +8,7 @@ from gurobipy import GRB
 from typing import List
 from collections import defaultdict
 from tqdm import tqdm
+from datetime import datetime
 
 # from networkx.drawing.nx_agraph import graphviz_layout
 from itertools import combinations
@@ -424,6 +425,7 @@ def generate_graphs_and_multicuts(
                         ],
                         "OptimalCost": int(optimal_cost),
                         "BestAchievedCost": 0,
+                        "CreatedAt": datetime.utcnow().isoformat() + "Z"  # ISO 8601 format with UTC 'Z',
                     }
                     graphs_data[node_count][average_kardinality].append(graph_data)
 
@@ -475,9 +477,9 @@ def generate_graphs_and_multicuts(
 
 
 def main():
-    output_path = "Assets/Resources/graphs.json"
+    output_path = "Assets/Resources/graphList.json"
     generate_graphs_and_multicuts(
-        graph_count=100000,
+        graph_count=100,
         graph_size_range=(5, 30),
         output_path=output_path,
         cost_probs_ranges=[

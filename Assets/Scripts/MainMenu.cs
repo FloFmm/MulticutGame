@@ -14,6 +14,11 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("ChallengeSelection");
     }
 
+    public void OnClickShop()
+    {
+        Debug.Log("Shop clicked");
+    }
+
     public void OnClickLeaderboard()
     {
         Debug.Log("Leaderboard clicked");

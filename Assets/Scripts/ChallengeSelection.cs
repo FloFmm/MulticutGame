@@ -13,24 +13,31 @@ public class ChallengeSelection : MonoBehaviour {
         int i = 0;
         foreach (Challenge challenge in GameData.ChallengeList.Challenges)
         {
-            
+
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = challenge.Name;
             // Set HighScore and TimeLimit (in 2 columns below)
-            newButton.transform.Find("HorizontalGroup/Text_HighScore")
-                .GetComponent<TMPro.TextMeshProUGUI>().text = $"HIGH SCORE:\n{challenge.HighScore} | {challenge.LevelCount}";
+            int levelCount = Math.Min(
+                GameData.GraphList.Graphs.Count(graph =>
+                    graph.Difficulty >= challenge.MinDifficulty &&
+                    graph.Difficulty <= challenge.MaxDifficulty),
+                challenge.LevelCount);
+            int highScore = GameData.GetHighScoreForChallenge(challenge).HighScore;
+            newButton.transform.Find("VerticalGroup/HorizontalGroup/Text_HighScore")
+                .GetComponent<TMPro.TextMeshProUGUI>().text = $"BEST\n{highScore} | {levelCount}";
 
-            newButton.transform.Find("HorizontalGroup/Text_TimeLimit")
-                .GetComponent<TMPro.TextMeshProUGUI>().text = $"TIME:\n{challenge.TimeLimit}s";
+            newButton.transform.Find("VerticalGroup/HorizontalGroup/Text_TimeLimit")
+                .GetComponent<TMPro.TextMeshProUGUI>().text = $"TIME\n{challenge.TimeLimit}(+{challenge.TimePerLevel})s";
 
             // Set the button's background color
             Image buttonImage = newButton.GetComponent<Image>();
             if (buttonImage != null && i < GameData.ColorPalette.edgeColors.Count)
                 buttonImage.color = GameData.ColorPalette.edgeColors[i];
             else
-                buttonImage.color = GameData.ColorPalette.edgeColors[GameData.ColorPalette.edgeColors.Count-1];
+                buttonImage.color = GameData.ColorPalette.edgeColors[GameData.ColorPalette.edgeColors.Count - 1];
             i++;
             newButton.GetComponent<Button>().onClick.AddListener(() => OnChallengeSelected(challenge));
+            
         }
     }
 
@@ -41,26 +48,7 @@ public class ChallengeSelection : MonoBehaviour {
         {
             if (graph.Difficulty >= challenge.MinDifficulty && graph.Difficulty <= challenge.MaxDifficulty)
             {
-                Graph copiedGraph = new Graph
-                {
-                    Difficulty = graph.Difficulty,
-                    Name = graph.Name,
-                    OptimalCost = graph.OptimalCost,
-                    BestAchievedCost = 0,
-                    Nodes = graph.Nodes.Select(n => n.Clone()).ToList(),
-                    Edges = graph.Edges.Select(e => e.Clone()).ToList()
-                };
-                //TODO resetting should not be necessary
-                foreach (Edge edge in copiedGraph.Edges)
-                {
-                    edge.IsCut = false;
-                }
-                foreach (Node node in copiedGraph.Nodes)
-                {
-                    node.ConnectedComponentId = 0;
-                }
-
-                challengeGraphList.Add(copiedGraph);
+                challengeGraphList.Add(graph.DeepCopy());
             }
         }
         System.Random rng = new System.Random((int)DateTime.Now.Ticks);

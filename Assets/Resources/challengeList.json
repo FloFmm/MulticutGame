@@ -1,0 +1,58 @@
+{
+    "Challenges": [
+        {
+            "Name": "Easy",
+            "CreatedAt": "2025-06-23T11:58:26.689546Z",
+            "TimeLimit": 10,
+            "TimePerLevel": 5,
+            "MinDifficulty": 0.0,
+            "MaxDifficulty": 0.2,
+            "LevelCount": 100
+        },
+        {
+            "Name": "Medium",
+            "CreatedAt": "2025-06-22T11:58:26.689546Z",
+            "TimeLimit": 150,
+            "TimePerLevel": 0,
+            "MinDifficulty": 0.2,
+            "MaxDifficulty": 0.4,
+            "LevelCount": 100
+        },
+        {
+            "Name": "Hard",
+            "CreatedAt": "2025-06-22T11:58:26.689546Z",
+            "TimeLimit": 20,
+            "TimePerLevel": 3,
+            "MinDifficulty": 0.4,
+            "MaxDifficulty": 0.6,
+            "LevelCount": 100
+        },
+        {
+            "Name": "Extreme",
+            "CreatedAt": "2025-06-22T11:58:26.689546Z",
+            "TimeLimit": 25,
+            "TimePerLevel": 5,
+            "MinDifficulty": 0.7,
+            "MaxDifficulty": 0.8,
+            "LevelCount": 100
+        },
+        {
+            "Name": "Not Funny Anymore",
+            "CreatedAt": "2025-06-22T11:58:26.689546Z",
+            "TimeLimit": 25,
+            "TimePerLevel": 10,
+            "MinDifficulty": 0.8,
+            "MaxDifficulty": 0.9,
+            "LevelCount": 100
+        },
+        {
+            "Name": "Never",
+            "CreatedAt": "2025-06-22T11:58:26.689546Z",
+            "TimeLimit": 25,
+            "TimePerLevel": 25,
+            "MinDifficulty": 0.9,
+            "MaxDifficulty": 1.0,
+            "LevelCount": 100
+        }
+    ]
+}

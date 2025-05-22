@@ -2,21 +2,32 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public static class GameData
 {
-    public static float levelSelectionScrollPosition = 0.0f;
+    // Graph
     public static GraphList GraphList;
-    public static ChallengeList ChallengeList;
+    public static GraphList GraphHighScoreList;
     public static Graph SelectedGraph;
+
+    // Challenge
+    public static ChallengeList ChallengeList;
+    public static ChallengeHighScoreList ChallengeHighScoreList;
     public static Challenge SelectedChallenge;
     public static List<Graph> SelectedChallengeGraphList;
     public static int SelectedChallengeGraphIndex;
+    public static float ChallengeStartTime;
+
+    // UI
+    public static float levelSelectionScrollPosition = 0.0f;
     public static bool ScissorIsActive; // toggle between scissor and rubber
     public static List<Vector3> LastCutPathPositions;
     public static List<GameObject> LastCutEdges;
     public static ColorPalette ColorPalette => _palette ??= Resources.Load<ColorPalette>("GlobalColorPalette");
     private static ColorPalette _palette;
+
+    // Settings
     public static readonly List<int> edgeCosts = new List<int> { -2, -1, 0, 1, 2 };
     public static readonly List<float> edgeWidths = new List<float> { 6f, 6f, 6f, 6f, 6f };
     public static readonly List<float> edgePitches = new List<float> { 0.2f, 0.55f, 0.9f, 1.25f, 1.6f };
@@ -28,60 +39,119 @@ public static class GameData
         _ = ColorPalette;
 
         LoadGraphList();
+        LoadGraphHighScoreList();
         LoadChallengeList();
+        LoadChallengeHighScoreList();
         LastCutPathPositions = new List<Vector3>();
         LastCutEdges = new List<GameObject>();
     }
 
-    public static void SaveGraphListToPlayerPrefs()
+    public static void SaveToPlayerPrefs<T>(string key, T data)
     {
-        // Convert the GraphList to JSON
-        string json = JsonUtility.ToJson(GraphList);
-
-        // Store it in PlayerPrefs
-        PlayerPrefs.SetString("graphList", json);
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(key, json);
         PlayerPrefs.Save();
+    }
+
+    public static T LoadFromPlayerPrefs<T>(string key) where T : class
+    {
+        if (PlayerPrefs.HasKey(key))
+        {
+            string json = PlayerPrefs.GetString(key);
+            return JsonUtility.FromJson<T>(json);
+        }
+        return null;
+    }
+
+    public static T LoadFromFile<T>(string key) where T : class
+    {
+        TextAsset jsonFile = Resources.Load<TextAsset>(key);
+        if (jsonFile == null)
+        {
+            Debug.LogError($"File not found at Resources/{key}");
+            return null;
+        }
+        return JsonUtility.FromJson<T>(jsonFile.text);
     }
 
     public static void LoadGraphList()
     {
-        // Check if the GraphList exists in PlayerPrefs
-        if (PlayerPrefs.HasKey("graphList"))
+        GraphList = LoadFromFile<GraphList>("graphList");
+    }
+
+    public static void LoadGraphHighScoreList()
+    {
+        GraphHighScoreList = LoadFromPlayerPrefs<GraphList>("graphHighScoreList");
+
+        if (GraphHighScoreList != null)
         {
-            // Retrieve the JSON string from PlayerPrefs
-            string json = PlayerPrefs.GetString("graphList");
-            // Convert the JSON string back into the GraphList object
-            GraphList = JsonUtility.FromJson<GraphList>(json);
-            Debug.Log("Loaded Graph from PlayerPrefs.");
+            // Step 1: Keep only graphs that match by name and CreatedAt
+            GraphHighScoreList.Graphs = GraphHighScoreList.Graphs
+                .Where(g1 => GraphList.Graphs.Any(g2 =>
+                    g1.Name == g2.Name && g1.CreatedAt == g2.CreatedAt))
+                .ToList();
+
+            // Step 2: Add any missing graphs from GraphList
+            foreach (var graph in GraphList.Graphs)
+            {
+                bool exists = GraphHighScoreList.Graphs.Any(g =>
+                    g.Name == graph.Name && g.CreatedAt == graph.CreatedAt);
+
+                if (!exists)
+                {
+                    GraphHighScoreList.Graphs.Add(graph.DeepCopy()); // or deep copy
+                }
+            }
         }
         else
         {
-            TextAsset jsonFile = Resources.Load<TextAsset>("graphs");
-            if (jsonFile == null)
-            {
-                Debug.LogError("Graph file not found in Resources.");
-            }
-            GraphList = JsonUtility.FromJson<GraphList>(jsonFile.text);
-            Debug.Log("No player progress found.");
-        }
-        if (GraphList == null || GraphList.Graphs.Count == 0)
-        {
-            throw new InvalidOperationException("No graphs were loaded. Ensure the graph data exists and is not empty.");
+            // If nothing loaded, use a full deep copy from GraphList
+            GraphHighScoreList = GraphList.DeepCopy();
         }
     }
-    
+
     public static void LoadChallengeList()
     {
-        // Check if the GraphList exists in PlayerPrefs
-        TextAsset jsonFile = Resources.Load<TextAsset>("challenges");
-        if (jsonFile == null)
+        ChallengeList = LoadFromFile<ChallengeList>("challengeList");
+    }
+
+    public static void LoadChallengeHighScoreList()
+    {
+        ChallengeHighScoreList = LoadFromPlayerPrefs<ChallengeHighScoreList>("challengeHighScoreList");
+        if (ChallengeHighScoreList != null)
         {
-            Debug.LogError("Challenge file not found in Resources.");
+            // Filter out any high scores that don't match a challenge in the ChallengeList
+            ChallengeHighScoreList.ChallengeHighScores = ChallengeHighScoreList.ChallengeHighScores
+                .Where(score => ChallengeList.Challenges.Any(challenge =>
+                    challenge.Name == score.ChallengeName &&
+                    challenge.CreatedAt == score.ChallengeCreatedAt))
+                .ToList();
         }
-        ChallengeList = JsonUtility.FromJson<ChallengeList>(jsonFile.text);
-        if (ChallengeList == null)
+        else
+            ChallengeHighScoreList = new ChallengeHighScoreList();
+    }
+
+    public static ChallengeHighScore GetHighScoreForChallenge(Challenge challenge)
+    {
+        var existingHighScore = ChallengeHighScoreList.ChallengeHighScores
+            .FirstOrDefault(score =>
+                score.ChallengeName == challenge.Name &&
+                score.ChallengeCreatedAt == challenge.CreatedAt);
+        if (existingHighScore != null)
         {
-            throw new InvalidOperationException("No Challenges were loaded. Ensure the Challenge data exists");
+            return existingHighScore;
         }
+
+        // Create new high score if none found
+        var newHighScore = new ChallengeHighScore
+        {
+            ChallengeName = challenge.Name,
+            ChallengeCreatedAt = challenge.CreatedAt,
+        };
+
+        // add the new high score to the list so it’s tracked
+        ChallengeHighScoreList.ChallengeHighScores.Add(newHighScore);
+
+        return newHighScore;
     }
 }
