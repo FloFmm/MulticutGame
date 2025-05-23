@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;  // For Vector2
+using System.Linq;
 
 [Serializable]
 public class Node
@@ -54,6 +55,7 @@ public class Graph
     public float Difficulty;
     public string Name;
     public string CreatedAt;
+    public string[] Text = new string[0];
 
     public Graph DeepCopy()
     {
@@ -63,7 +65,8 @@ public class Graph
             BestAchievedCost = BestAchievedCost,
             Difficulty = Difficulty,
             Name = Name,
-            CreatedAt = CreatedAt
+            CreatedAt = CreatedAt,
+            Text = (string[])Text.Clone() // proper copy
         };
 
         foreach (var node in Nodes)

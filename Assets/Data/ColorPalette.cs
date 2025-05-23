@@ -6,4 +6,18 @@ public class ColorPalette : ScriptableObject
 {
     public List<Color> edgeColors;
     public List<Color> nodeColors;
+    [HideInInspector] public Color lowRemainingTimeColor;
+    [HideInInspector] public Color invalidSolutionColor;
+    [HideInInspector] public Color optimalSolutionColor;
+    [HideInInspector] public Color normalTextColor = Color.white;
+
+    private void OnValidate()
+    {
+        if (edgeColors != null && edgeColors.Count > 0)
+        {
+            invalidSolutionColor = edgeColors[edgeColors.Count - 1];
+            lowRemainingTimeColor = edgeColors[edgeColors.Count - 1];
+            optimalSolutionColor = edgeColors[0];
+        }
+    }
 }

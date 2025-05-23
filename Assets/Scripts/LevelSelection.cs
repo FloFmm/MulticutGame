@@ -7,9 +7,15 @@ public class LevelSelection : MonoBehaviour {
     public GameObject buttonPrefab; // Assign MenuButtonPrefab in inspector
     public Transform contentParent; // Assign Content of Scroll View
     public ScrollRect scrollRect;
+    private List<Graph> graphs;
     void Start()
     {
-        foreach (Graph graph in GameData.GraphHighScoreList.Graphs)
+        if (GameData.IsTutorial)
+            graphs = GameData.TutorialList.Graphs;
+        else
+            graphs = GameData.GraphHighScoreList.Graphs;
+            
+        foreach (Graph graph in graphs)
         {
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = graph.Name;

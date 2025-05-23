@@ -1,0 +1,81 @@
+{
+    "Graphs": [
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -4,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-09-23T11:58:26.689546Z",
+            "Difficulty": 0.005881226053639847,
+            "Name": "1",
+            "Text": [
+                "Cutting edges gives points based on their color.",
+                "Dark Green: +2  Green: +1  Yellow: 0  Orange: -1  Red: -2",
+                "The goal is to get as many points as possible.",
+                "Your current score is shown in the top left corner."
+            ]
+        }
+    ]
+}

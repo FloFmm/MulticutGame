@@ -19,6 +19,10 @@ public static class GameData
     public static int SelectedChallengeGraphIndex;
     public static float ChallengeStartTime;
 
+    // Tutorial
+    public static bool IsTutorial = false;
+    public static GraphList TutorialList;
+
     // UI
     public static float levelSelectionScrollPosition = 0.0f;
     public static bool ScissorIsActive; // toggle between scissor and rubber
@@ -38,6 +42,7 @@ public static class GameData
         // This ensures _palette is loaded once early
         _ = ColorPalette;
 
+        LoadTutorialList();
         LoadGraphList();
         LoadGraphHighScoreList();
         LoadChallengeList();
@@ -77,6 +82,11 @@ public static class GameData
     public static void LoadGraphList()
     {
         GraphList = LoadFromFile<GraphList>("graphList");
+    }
+
+    public static void LoadTutorialList()
+    {
+        TutorialList = LoadFromFile<GraphList>("tutorialList");
     }
 
     public static void LoadGraphHighScoreList()

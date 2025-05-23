@@ -9,6 +9,7 @@ public class GraphManager : MonoBehaviour
 {
     public GameObject nodePrefab;
     public GameObject edgePrefab;
+    public TextMeshProUGUI levelText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelNameText;
     public TextMeshProUGUI countdownText;
@@ -30,6 +31,15 @@ public class GraphManager : MonoBehaviour
         }
         else
         {
+            // tutorial or level
+            if (GameData.IsTutorial)
+            {
+                levelText.gameObject.SetActive(true);
+                levelText.GetComponent<ClickableText>().messages = GameData.SelectedGraph.Text;
+            }
+            else {
+                levelText.gameObject.SetActive(false);
+            }
             countdownText.gameObject.SetActive(false);
         }
 
@@ -219,7 +229,7 @@ public class GraphManager : MonoBehaviour
         countdownText.text = $"{remainingTime:F1}s";
         if (remainingTime < 10)
         {
-            countdownText.color = Color.red;
+            countdownText.color = GameData.ColorPalette.lowRemainingTimeColor;
         }
         else
         {
@@ -237,15 +247,16 @@ public class GraphManager : MonoBehaviour
 
         if (isValidMulticut())
         {
-            if (GameData.SelectedChallenge == null)
+            if (GameData.SelectedChallenge == null) // level or tutorial
             {
                 if (currentScore < GameData.SelectedGraph.BestAchievedCost)
                 {
                     GameData.SelectedGraph.BestAchievedCost = currentScore;
-                    GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
+                    if (!GameData.IsTutorial)
+                        GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
                 }
             }
-            else
+            else // challenge mode
             {
                 if (currentScore == GameData.SelectedGraph.OptimalCost)
                 {
@@ -270,12 +281,15 @@ public class GraphManager : MonoBehaviour
                 }
             }
 
-            scoreText.color = Color.white;
+            if (currentScore == GameData.SelectedGraph.OptimalCost)
+                scoreText.color = GameData.ColorPalette.optimalSolutionColor;
+            else
+                scoreText.color = GameData.ColorPalette.normalTextColor;
             scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
         }
         else
         {
-            scoreText.color = Color.red;
+            scoreText.color = GameData.ColorPalette.invalidSolutionColor;
             scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost} INVALID!";
         }
     }

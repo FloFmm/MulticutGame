@@ -3,20 +3,21 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    public void OnClickTutorial()
+    {
+        GameData.IsTutorial = true;
+        SceneManager.LoadScene("LevelSelection");
+    }
 
     public void OnClickLevels()
     {
+        GameData.IsTutorial = false;
         SceneManager.LoadScene("LevelSelection");
     }
 
     public void OnClickChallenges()
     {
         SceneManager.LoadScene("ChallengeSelection");
-    }
-
-    public void OnClickShop()
-    {
-        Debug.Log("Shop clicked");
     }
 
     public void OnClickLeaderboard()
