@@ -11,6 +11,7 @@ from tqdm import tqdm
 from datetime import datetime
 from multiprocessing import Pool, cpu_count
 import matplotlib.pyplot as plt
+
 # from networkx.drawing.nx_agraph import graphviz_layout
 from itertools import combinations
 
@@ -177,7 +178,9 @@ def get_node_pos_from_id(graph, node_id):
             return pos
 
 
-def is_valid_edge(u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool = False):
+def is_valid_edge(
+    u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool = False
+):
     """Check whether the edge u-v is valid (no existing edge, no intersection, no node on edge)"""
     if graph.has_edge(u, v):
         return False
@@ -196,7 +199,7 @@ def is_valid_edge(u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool
                 return False
 
     # check whetehr another edge starting from the same node is very close
-    min_distance = (num_columns)/5.0
+    min_distance = (num_columns) / 5.0
     for a, b in graph.edges:
         common = set((u, v)) & set((a, b))
         if len(common) == 1:
@@ -210,7 +213,8 @@ def is_valid_edge(u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool
             # Check if other_point lies very close to the edge u-v
             # print(perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord))
             if (
-                perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord) < min_distance
+                perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord)
+                < min_distance
                 or perpendicular_distance(u_or_v_coord, common_coord, a_or_b_coord)
                 < min_distance
             ) and abs(
@@ -225,7 +229,7 @@ def is_valid_edge(u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool
         if node_id in (u, v):
             continue  # skip endpoints
 
-        if point_on_segment(pos, pos_u, pos_v, num_columns/10.0):
+        if point_on_segment(pos, pos_u, pos_v, num_columns / 10.0):
             return False
     return True
 
@@ -245,6 +249,7 @@ def count_cut_edges_by_cost(multicut, costs):
 def calc_level_difficulty(graph_data, min_max_stats):
     difficulty = 0
     num_cut_edges = len([e for e in graph_data["Edges"] if e["OptimalCut"]])
+    num_not_cut_edges = len([e for e in graph_data["Edges"] if not e["OptimalCut"]])
     num_cut_edges_with_positive_cost = len(
         [e for e in graph_data["Edges"] if e["OptimalCut"] and e["Cost"] > 0]
     )
@@ -255,6 +260,13 @@ def calc_level_difficulty(graph_data, min_max_stats):
     max_num_cut_edges_with_positive_cost = min_max_stats[
         "max_num_cut_edges_with_positive_cost"
     ]
+    difficulty += ( #0.2 if the same nubmer of edges is cut and not cut
+        0.2
+        * 2
+        * min(num_cut_edges, num_not_cut_edges)
+        / (num_cut_edges + num_not_cut_edges)
+    )
+
     if max_num_cut_edges_with_positive_cost > 0:
         difficulty += (
             0.4
@@ -268,19 +280,19 @@ def calc_level_difficulty(graph_data, min_max_stats):
     max_nodes = min_max_stats["max_nodes"]
     if max_nodes - min_nodes > 0:
         difficulty += (
-            0.15 * (len(graph_data["Nodes"]) - min_nodes) / (max_nodes - min_nodes)
+            0.1 * (len(graph_data["Nodes"]) - min_nodes) / (max_nodes - min_nodes)
         )
     min_edges = min_max_stats["min_edges"]
     max_edges = min_max_stats["max_edges"]
     if max_edges - min_edges > 0:
         difficulty += (
-            0.15 * (len(graph_data["Edges"]) - min_edges) / (max_edges - min_edges)
+            0.1 * (len(graph_data["Edges"]) - min_edges) / (max_edges - min_edges)
         )
     min_special_edges = min_max_stats["min_special_edges"]
     max_special_edges = min_max_stats["max_special_edges"]
     if (max_special_edges - min_special_edges) > 0:
         difficulty += (
-            0.2
+            0.1
             * (num_special_edges - min_special_edges)
             / (max_special_edges - min_special_edges)
         )
@@ -288,19 +300,24 @@ def calc_level_difficulty(graph_data, min_max_stats):
     return difficulty
 
 
-def connect_two_random_components(graph, num_columns: int, components: List, is_special_edge: bool=False):
-    comps= random.sample(list(components), k=len(components))
+def connect_two_random_components(
+    graph, num_columns: int, components: List, is_special_edge: bool = False
+):
+    comps = random.sample(list(components), k=len(components))
     for comp1 in comps:
         for comp2 in comps:
-            if set(comp1) == set(comp2): 
+            if set(comp1) == set(comp2):
                 continue
             for u in random.sample(list(comp1), k=len(comp1)):
                 for v in random.sample(list(comp2), k=len(comp2)):
-                    if is_valid_edge(u, v, num_columns, graph, is_special_edge=is_special_edge):
+                    if is_valid_edge(
+                        u, v, num_columns, graph, is_special_edge=is_special_edge
+                    ):
                         # Add an edge to connect them
                         graph.add_edge(u, v)
                         return True
     return False
+
 
 def generate_random_graph(
     node_count: int,
@@ -355,8 +372,12 @@ def generate_random_graph(
     while not nx.is_connected(graph):
         components = list(nx.connected_components(graph))
 
-        if not connect_two_random_components(graph, num_columns, components, is_special_edge=False):
-            if not connect_two_random_components(graph, num_columns, components, is_special_edge=True):
+        if not connect_two_random_components(
+            graph, num_columns, components, is_special_edge=False
+        ):
+            if not connect_two_random_components(
+                graph, num_columns, components, is_special_edge=True
+            ):
                 break
 
     if not nx.is_connected(graph):
@@ -484,7 +505,7 @@ def generate(
         for node_count, avg_kard, graphs in tqdm(
             pool.imap_unordered(generate_graphs_for_pair, args_list),
             total=len(args_list),
-            desc="Generating graphs"
+            desc="Generating graphs",
         ):
             graphs_data[node_count][avg_kard] = graphs
 
@@ -538,7 +559,7 @@ def generate(
 def main():
     output_path = "Assets/Resources/graphList.json"
     generate(
-        graph_count=10000,
+        graph_count=200000,
         graph_size_range=(5, 50),
         output_path=output_path,
         cost_probs_ranges=[
