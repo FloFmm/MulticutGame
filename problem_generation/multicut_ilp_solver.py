@@ -9,7 +9,8 @@ from typing import List
 from collections import defaultdict
 from tqdm import tqdm
 from datetime import datetime
-
+from multiprocessing import Pool, cpu_count
+import matplotlib.pyplot as plt
 # from networkx.drawing.nx_agraph import graphviz_layout
 from itertools import combinations
 
@@ -93,14 +94,15 @@ def edges_intersect(p1, p2, q1, q2):
 
 
 def point_on_segment(p, a, b, eps=1e-8):
-    """Check if point p lies on segment a-b"""
+    """Check if point p lies within perpendicular distance 1 of segment a-b"""
     (px, py), (ax, ay), (bx, by) = p, a, b
-    # First, check if colinear (area of triangle = 0)
+
     cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax)
-    if abs(cross) > eps:
+    length = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5
+    distance = abs(cross) / length
+    if distance > eps:
         return False
 
-    # Then check if within bounding box
     if (
         min(ax, bx) - eps <= px <= max(ax, bx) + eps
         and min(ay, by) - eps <= py <= max(ay, by) + eps
@@ -175,7 +177,7 @@ def get_node_pos_from_id(graph, node_id):
             return pos
 
 
-def is_valid_edge(u, v, graph: nx.Graph, is_special_edge: bool = False):
+def is_valid_edge(u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool = False):
     """Check whether the edge u-v is valid (no existing edge, no intersection, no node on edge)"""
     if graph.has_edge(u, v):
         return False
@@ -194,6 +196,7 @@ def is_valid_edge(u, v, graph: nx.Graph, is_special_edge: bool = False):
                 return False
 
     # check whetehr another edge starting from the same node is very close
+    min_distance = (num_columns)/5.0
     for a, b in graph.edges:
         common = set((u, v)) & set((a, b))
         if len(common) == 1:
@@ -207,9 +210,9 @@ def is_valid_edge(u, v, graph: nx.Graph, is_special_edge: bool = False):
             # Check if other_point lies very close to the edge u-v
             # print(perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord))
             if (
-                perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord) < 0.9
+                perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord) < min_distance
                 or perpendicular_distance(u_or_v_coord, common_coord, a_or_b_coord)
-                < 0.9
+                < min_distance
             ) and abs(
                 angle_between_segments(a_or_b_coord, common_coord, u_or_v_coord)
             ) < 90:
@@ -217,12 +220,12 @@ def is_valid_edge(u, v, graph: nx.Graph, is_special_edge: bool = False):
                 # print(perpendicular_distance(a_or_b_coord, common_coord, u_or_v_coord))
                 return False
 
-    # Check if any third node lies exactly on the segment u-v
+    # Check if any third node lies close to segment u-v
     for node_id, pos in graph.nodes(data="pos"):
         if node_id in (u, v):
             continue  # skip endpoints
 
-        if point_on_segment(pos, pos_u, pos_v):
+        if point_on_segment(pos, pos_u, pos_v, num_columns/10.0):
             return False
     return True
 
@@ -285,7 +288,162 @@ def calc_level_difficulty(graph_data, min_max_stats):
     return difficulty
 
 
-def generate_graphs_and_multicuts(
+def connect_two_random_components(graph, num_columns: int, components: List, is_special_edge: bool=False):
+    comps= random.sample(list(components), k=len(components))
+    for comp1 in comps:
+        for comp2 in comps:
+            if set(comp1) == set(comp2): 
+                continue
+            for u in random.sample(list(comp1), k=len(comp1)):
+                for v in random.sample(list(comp2), k=len(comp2)):
+                    if is_valid_edge(u, v, num_columns, graph, is_special_edge=is_special_edge):
+                        # Add an edge to connect them
+                        graph.add_edge(u, v)
+                        return True
+    return False
+
+def generate_random_graph(
+    node_count: int,
+    average_kardinality: int,
+    cost_probs_ranges: List[tuple[float]],
+    available_costs: List[int],
+    density_range: tuple[float],
+    num_special_edges_range: tuple[int],
+):
+    density = random.uniform(*density_range)
+    num_special_edges = random.randint(*num_special_edges_range)
+    cost_probs = generate_random_prob_distribution(cost_probs_ranges)
+
+    num_columns = math.ceil((node_count / 2 / density) ** 0.5)
+    # Step 1: Create grid positions
+    positions = [(x, y) for x in range(num_columns) for y in range(2 * num_columns)]
+    # Step 2: Randomly select graph_size nodes
+    selected_positions = random.sample(positions, node_count)
+
+    # Add nodes with position attribute
+    graph = nx.Graph()
+    for idx, pos in enumerate(selected_positions):
+        graph.add_node(idx, pos=pos)
+    # Step 3: Iteratively add edges
+    possible_pairs = list(combinations(graph.nodes, 2))
+    random.shuffle(possible_pairs)
+    for u, v in possible_pairs:
+        if not is_valid_edge(u, v, num_columns, graph):
+            continue
+        graph.add_edge(u, v)
+        # Check stopping condition
+        if (
+            2 * (graph.number_of_edges() + num_special_edges) / node_count
+            > average_kardinality
+        ):
+            break
+
+    # add a few special edges that can intersect
+    special_edges = []
+    random.shuffle(possible_pairs)
+    i = 0
+    for u, v in possible_pairs:
+        if i == num_special_edges:
+            break
+        if not is_valid_edge(u, v, num_columns, graph, is_special_edge=True):
+            continue
+        graph.add_edge(u, v)
+        i += 1
+        special_edges.append((u, v))
+
+    # Check if the graph is connected, if not, add edges to connect it
+    while not nx.is_connected(graph):
+        components = list(nx.connected_components(graph))
+
+        if not connect_two_random_components(graph, num_columns, components, is_special_edge=False):
+            if not connect_two_random_components(graph, num_columns, components, is_special_edge=True):
+                break
+
+    if not nx.is_connected(graph):
+        # if num_columns == 3:
+        #     pos = nx.get_node_attributes(graph, "pos")
+        #     fig, ax = plt.subplots()
+        #     nx.draw(graph, pos, with_labels=True, node_color='skyblue', node_size=700, edge_color='gray', font_weight='bold')
+        #     plt.title(f"num_columns{num_columns}")
+        #     fig.canvas.manager.set_window_title(f"Num columns: {num_columns}")
+        #     plt.show()
+        #     exit(0)
+        return None
+
+    np.random.seed(2)
+    costs = {}
+    for u, v in graph.edges():
+        cost_index = np.random.choice(len(cost_probs), p=cost_probs)
+        costs[u, v] = available_costs[cost_index]
+
+    # Solve the multicut problem for the graph
+    multicut, optimal_cost = solve_multicut(graph, costs, log=False)
+
+    # atleast one positive edge must be cut
+    # num_cut_edges_with_positive_cost = len(
+    #     [
+    #         (u, v)
+    #         for u, v in graph.edges()
+    #         if multicut.get((u, v), 0) == 1 and costs[u, v] > 0
+    #     ]
+    # )
+    if optimal_cost < 0:
+        graph_data = {
+            "Nodes": [
+                {"Id": node_id, "Position": {"x": x, "y": y}}
+                for node_id, (x, y) in nx.get_node_attributes(graph, "pos").items()
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": u,
+                    "ToNodeId": v,
+                    "Cost": costs[u, v],
+                    "IsCut": False,
+                    "OptimalCut": (True if multicut.get((u, v), 0) == 1 else False),
+                    "IsSpecial": (
+                        True
+                        if (u, v) in special_edges or (v, u) in special_edges
+                        else False
+                    ),
+                }
+                for u, v in graph.edges()
+            ],
+            "OptimalCost": int(optimal_cost),
+            "BestAchievedCost": 0,
+            "CreatedAt": datetime.utcnow().isoformat()
+            + "Z",  # ISO 8601 format with UTC 'Z',
+        }
+        return graph_data
+    else:
+        return None
+
+
+def generate_graphs_for_pair(args):
+    (
+        graph_count_per_size,
+        node_count,
+        average_kardinality,
+        cost_probs_ranges,
+        available_costs,
+        density_range,
+        num_special_edges_range,
+    ) = args
+    local_graphs = []
+    while len(local_graphs) < graph_count_per_size:
+        graph_data = generate_random_graph(
+            node_count,
+            average_kardinality,
+            cost_probs_ranges,
+            available_costs,
+            density_range,
+            num_special_edges_range,
+        )
+        if graph_data:
+            local_graphs.append(graph_data)
+    return (node_count, average_kardinality, local_graphs)
+
+
+def generate(
     graph_count: int,
     graph_size_range: tuple[int],
     output_path: str,
@@ -307,127 +465,28 @@ def generate_graphs_and_multicuts(
         max_kardinality - min_kardinality + 1
     )
     graph_count_per_size = math.ceil(graph_count / num_size_combinations)
-    graphs_data = {}
-    for node_count in tqdm(
-        range(min_node_count, max_node_count + 1), desc="Node Count"
-    ):
-        graphs_data[node_count] = {}
-        for average_kardinality in range(min_kardinality, max_kardinality + 1):
-            graphs_data[node_count][average_kardinality] = []
-            while (
-                len(graphs_data[node_count][average_kardinality]) < graph_count_per_size
-            ):
-                density = random.uniform(*density_range)
-                num_special_edges = random.randint(*num_special_edges_range)
-                cost_probs = generate_random_prob_distribution(cost_probs_ranges)
 
-                num_columns = math.ceil((node_count / 2 / density) ** 0.5)
-                # Step 1: Create grid positions
-                positions = [
-                    (x, y) for x in range(num_columns) for y in range(2 * num_columns)
-                ]
-                # Step 2: Randomly select graph_size nodes
-                selected_positions = random.sample(positions, node_count)
-
-                # Add nodes with position attribute
-                graph = nx.Graph()
-                for idx, pos in enumerate(selected_positions):
-                    graph.add_node(idx, pos=pos)
-                # Step 3: Iteratively add edges
-                possible_pairs = list(combinations(graph.nodes, 2))
-                random.shuffle(possible_pairs)
-                for u, v in possible_pairs:
-                    if not is_valid_edge(u, v, graph):
-                        continue
-                    graph.add_edge(u, v)
-                    # Check stopping condition
-                    if (
-                        2 * (graph.number_of_edges() + num_special_edges) / node_count
-                        > average_kardinality
-                    ):
-                        break
-
-                # add a few special edges that can intersect
-                special_edges = []
-                random.shuffle(possible_pairs)
-                i = 0
-                for (u, v) in possible_pairs:
-                    if i == num_special_edges:
-                        break
-                    if not is_valid_edge(u, v, graph, is_special_edge=True):
-                        continue
-                    graph.add_edge(u, v)
-                    i += 1
-                    special_edges.append((u, v))
-
-                # Check if the graph is connected, if not, add edges to connect it
-                try_nr = 0
-                if not nx.is_connected(graph):
-                    components = list(nx.connected_components(graph))
-                    while not nx.is_connected(graph) and try_nr < 1000:
-                        # Get the first two components
-                        comp1 = random.choice(components)
-                        comp2 = random.choice([c for c in components if c is not comp1])
-                        # Find the first pair of nodes from different components
-                        u = random.choice(list(comp1))
-                        v = random.choice(list(comp2))
-                        if is_valid_edge(u, v, graph, is_special_edge=False):
-                            # Add an edge to connect them
-                            graph.add_edge(u, v)
-                            components = list(nx.connected_components(graph))
-                        try_nr += 1
-                if not nx.is_connected(graph):
-                    continue
-
-                # Generate random edge costs
-                np.random.seed(2)
-                costs = {}
-                for u, v in graph.edges():
-                    cost_index = np.random.choice(len(cost_probs), p=cost_probs)
-                    costs[u, v] = available_costs[cost_index]
-
-                # Solve the multicut problem for the graph
-                multicut, optimal_cost = solve_multicut(graph, costs, log=False)
-
-                # atleast one positive edge must be cut
-                # num_cut_edges_with_positive_cost = len(
-                #     [
-                #         (u, v)
-                #         for u, v in graph.edges()
-                #         if multicut.get((u, v), 0) == 1 and costs[u, v] > 0
-                #     ]
-                # )
-                if optimal_cost < 0:
-                    graph_data = {
-                        "Nodes": [
-                            {"Id": node_id, "Position": {"x": x, "y": y}}
-                            for node_id, (x, y) in nx.get_node_attributes(
-                                graph, "pos"
-                            ).items()
-                        ],
-                        "Edges": [
-                            {
-                                "FromNodeId": u,
-                                "ToNodeId": v,
-                                "Cost": costs[u, v],
-                                "IsCut": False,
-                                "OptimalCut": (
-                                    True if multicut.get((u, v), 0) == 1 else False
-                                ),
-                                "IsSpecial": (
-                                    True
-                                    if (u, v) in special_edges
-                                    or (v, u) in special_edges
-                                    else False
-                                ),
-                            }
-                            for u, v in graph.edges()
-                        ],
-                        "OptimalCost": int(optimal_cost),
-                        "BestAchievedCost": 0,
-                        "CreatedAt": datetime.utcnow().isoformat() + "Z"  # ISO 8601 format with UTC 'Z',
-                    }
-                    graphs_data[node_count][average_kardinality].append(graph_data)
+    graphs_data = defaultdict(lambda: defaultdict(list))
+    args_list = [
+        (
+            graph_count_per_size,
+            node_count,
+            average_kardinality,
+            cost_probs_ranges,
+            available_costs,
+            density_range,
+            num_special_edges_range,
+        )
+        for node_count in range(min_node_count, max_node_count + 1)
+        for average_kardinality in range(min_kardinality, max_kardinality + 1)
+    ]
+    with Pool(processes=cpu_count()) as pool:
+        for node_count, avg_kard, graphs in tqdm(
+            pool.imap_unordered(generate_graphs_for_pair, args_list),
+            total=len(args_list),
+            desc="Generating graphs"
+        ):
+            graphs_data[node_count][avg_kard] = graphs
 
     # Prepare data for C# serialization
     min_max_stats = {}
@@ -478,16 +537,16 @@ def generate_graphs_and_multicuts(
 
 def main():
     output_path = "Assets/Resources/graphList.json"
-    generate_graphs_and_multicuts(
-        graph_count=100,
-        graph_size_range=(5, 30),
+    generate(
+        graph_count=10000,
+        graph_size_range=(5, 50),
         output_path=output_path,
         cost_probs_ranges=[
-            (0.05, 0.8),
-            (0.05, 0.8),
-            (0.05, 0.8),
-            (0.05, 0.8),
-            (0.05, 0.8),
+            (0.1, 0.6),
+            (0.1, 0.6),
+            (0.1, 0.6),
+            (0.1, 0.6),
+            (0.1, 0.6),
         ],
         available_costs=[-2, -1, 0, 1, 2],
         density_range=(0.1, 0.7),
