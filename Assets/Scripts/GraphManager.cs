@@ -9,6 +9,7 @@ public class GraphManager : MonoBehaviour
 {
     public GameObject nodePrefab;
     public GameObject edgePrefab;
+    public GameObject levelOverlay;
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelNameText;
@@ -20,6 +21,7 @@ public class GraphManager : MonoBehaviour
 
     void Start()
     {
+        levelOverlay.SetActive(false);
         if (GameData.SelectedChallenge != null)
         {
             // challenge Mode
@@ -37,7 +39,8 @@ public class GraphManager : MonoBehaviour
                 levelText.gameObject.SetActive(true);
                 levelText.GetComponent<ClickableText>().messages = GameData.SelectedGraph.Text;
             }
-            else {
+            else
+            {
                 levelText.gameObject.SetActive(false);
             }
             countdownText.gameObject.SetActive(false);
@@ -252,6 +255,7 @@ public class GraphManager : MonoBehaviour
                 if (currentScore < GameData.SelectedGraph.BestAchievedCost)
                 {
                     GameData.SelectedGraph.BestAchievedCost = currentScore;
+                    ActivateOverlay("You did it", "next", Color.green);
                     if (!GameData.IsTutorial)
                         GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
                 }
@@ -306,5 +310,33 @@ public class GraphManager : MonoBehaviour
         edgeRenderer.pointA = nodeA.transform;
         edgeRenderer.pointB = nodeB.transform;
         edgeRenderer.Edge = edge;
+    }
+    
+    public void ActivateOverlay(string text, string buttonText, Color color)//, UnityAction buttonAction, Color color)
+    {
+        // Find the main text by name
+        levelOverlay.SetActive(true);
+        TMP_Text mainText = levelOverlay.transform.Find("Text")?.GetComponent<TMP_Text>();
+        if (mainText != null)
+        {
+            mainText.text = text;
+            mainText.color = color;
+        }
+
+        // Find the button by name
+        // Transform buttonTransform = levelOverlay.GetComponent<Button>();
+        // if (buttonTransform != null)
+        // {
+        //     Button button = buttonTransform.GetComponent<Button>();
+        //     TMP_Text buttonLabel = buttonTransform.GetComponentInChildren<TMP_Text>();
+
+        //     if (button != null && buttonLabel != null)
+        //     {
+        //         buttonLabel.text = buttonText;
+        //         // button.onClick.AddListener(buttonAction);
+        //     }
+        // }
+
+        // return overlay;
     }
 }
