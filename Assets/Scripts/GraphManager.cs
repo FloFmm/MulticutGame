@@ -4,6 +4,8 @@ using TMPro; // Needed for TextMeshPro
 using System;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class GraphManager : MonoBehaviour
 {
@@ -120,7 +122,8 @@ public class GraphManager : MonoBehaviour
             Vector2 scaledPos = new Vector2(localPos.x * scaleX, localPos.y * scaleY);
             Vector3 worldPos = new Vector3(screenCenter.x + scaledPos.x, screenCenter.y + scaledPos.y, 0f);
 
-            GameObject nodeObj = Instantiate(nodePrefab, worldPos, Quaternion.identity);
+            GameObject nodeObj = Instantiate(nodePrefab, worldPos, Quaternion.identity, this.transform);
+            //Instantiate(edgePrefab, Vector3.zero, Quaternion.identity, this.transform);
             nodeIdToGameObjectMap[node.Id] = nodeObj;
         }
 
@@ -250,19 +253,29 @@ public class GraphManager : MonoBehaviour
 
         if (isValidMulticut())
         {
-            if (GameData.SelectedChallenge == null) // level or tutorial
+            scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
+            if (currentScore < GameData.SelectedGraph.BestAchievedCost)
             {
-                if (currentScore < GameData.SelectedGraph.BestAchievedCost)
+                if (GameData.SelectedChallenge != null) //challenge
+                {
+                }
+                else if (GameData.IsTutorial) // tutorial
                 {
                     GameData.SelectedGraph.BestAchievedCost = currentScore;
-                    ActivateOverlay("You did it", "next", Color.green);
-                    if (!GameData.IsTutorial)
-                        GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
+                    GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
+                }
+                else // normal level
+                {
+                    GameData.SelectedGraph.BestAchievedCost = currentScore;
                 }
             }
-            else // challenge mode
+            if (currentScore == GameData.SelectedGraph.OptimalCost)
             {
-                if (currentScore == GameData.SelectedGraph.OptimalCost)
+                scoreText.color = GameData.ColorPalette.optimalSolutionColor;
+                string text = "LEVEL COMPLETE";
+                string buttonText = "NEXT LEVEL";
+                Color color = Color.green;
+                if (GameData.SelectedChallenge != null) //challenge
                 {
                     // update challenge highscore
                     var highScoreObj = GameData.GetHighScoreForChallenge(GameData.SelectedChallenge);
@@ -271,25 +284,19 @@ public class GraphManager : MonoBehaviour
                         highScoreObj.HighScore = GameData.SelectedChallengeGraphIndex + 1;
                         GameData.SaveToPlayerPrefs("challengeHighScoreList", GameData.ChallengeHighScoreList);
                     }
-
-                    // load next challenge level
-                    if (GameData.SelectedChallengeGraphIndex == GameData.SelectedChallenge.LevelCount - 1)
-                    {
-                        SceneManager.LoadScene("ChallengeSelection");
-                    }
-                    else
-                    {
-                        GameData.SelectedChallengeGraphIndex += 1;
-                        SceneManager.LoadScene("GameScene");
-                    }
                 }
+                else if (GameData.IsTutorial) // tutorial
+                {
+                }
+                else // normal level
+                {
+                }
+                ActivateOverlay(text, buttonText, color, () => loadNextLevel());
             }
-
-            if (currentScore == GameData.SelectedGraph.OptimalCost)
-                scoreText.color = GameData.ColorPalette.optimalSolutionColor;
             else
+            {
                 scoreText.color = GameData.ColorPalette.normalTextColor;
-            scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
+            }
         }
         else
         {
@@ -312,7 +319,7 @@ public class GraphManager : MonoBehaviour
         edgeRenderer.Edge = edge;
     }
     
-    public void ActivateOverlay(string text, string buttonText, Color color)//, UnityAction buttonAction, Color color)
+    public void ActivateOverlay(string text, string buttonText, Color color, UnityAction buttonAction)
     {
         // Find the main text by name
         levelOverlay.SetActive(true);
@@ -323,20 +330,40 @@ public class GraphManager : MonoBehaviour
             mainText.color = color;
         }
 
-        // Find the button by name
-        // Transform buttonTransform = levelOverlay.GetComponent<Button>();
-        // if (buttonTransform != null)
-        // {
-        //     Button button = buttonTransform.GetComponent<Button>();
-        //     TMP_Text buttonLabel = buttonTransform.GetComponentInChildren<TMP_Text>();
+        //Find the button by name
+        Transform buttonTransform = levelOverlay.transform.Find("Button");
+        if (buttonTransform != null)
+        {
+            Button button = buttonTransform.GetComponent<Button>();
+            TMP_Text buttonLabel = buttonTransform.GetComponentInChildren<TMP_Text>();
 
-        //     if (button != null && buttonLabel != null)
-        //     {
-        //         buttonLabel.text = buttonText;
-        //         // button.onClick.AddListener(buttonAction);
-        //     }
-        // }
+            if (button != null && buttonLabel != null)
+            {
+                buttonLabel.text = buttonText;
+                button.onClick.AddListener(buttonAction);
+            }
+        }
+    }
 
-        // return overlay;
+    public void loadNextLevel()
+    {
+        if (GameData.SelectedChallenge != null) //challenge
+        {
+            if (GameData.SelectedChallengeGraphIndex == GameData.SelectedChallenge.LevelCount - 1)
+            {
+                SceneManager.LoadScene("ChallengeSelection");
+            }
+            else
+            {
+                GameData.SelectedChallengeGraphIndex += 1;
+                SceneManager.LoadScene("GameScene");
+            }
+        }
+        else if (GameData.IsTutorial) // tutorial
+        {
+        }
+        else // normal level
+        {
+        } 
     }
 }
