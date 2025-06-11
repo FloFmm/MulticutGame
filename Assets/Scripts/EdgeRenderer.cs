@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro; 
 
 public class EdgeRenderer : MonoBehaviour
 {
@@ -10,6 +12,13 @@ public class EdgeRenderer : MonoBehaviour
     public float touchThreshold;   // How close the finger must be to one of the segments to drag the middle point
     // public float maxEdgeLengthStretch;   // If the touch gets further than this from A or B, reset the middle point
     public float cutDistance;
+    public GameObject costNodePrefab;
+
+    // cost Node
+    private GameObject costNode;
+    private TextMeshProUGUI costNodeText;
+    private SpriteRenderer costNodeRenderer;
+
     private float edgeWidth;
     public GraphManager graphManager;
     private int lineType;
@@ -46,6 +55,12 @@ public class EdgeRenderer : MonoBehaviour
             lineRenderer.startColor = GameData.ColorPalette.edgeColors[lineType];
             lineRenderer.endColor = GameData.ColorPalette.edgeColors[lineType];
             pitch = GameData.edgePitches[lineType];
+
+            // cost Node
+            if (costNodeRenderer != null)
+                costNodeRenderer.color = lineRenderer.startColor;
+            if (costNodeText != null)
+                costNodeText.text = $"{edge.Cost}";
         }
     }
     // private bool isCut = false;
@@ -94,10 +109,23 @@ public class EdgeRenderer : MonoBehaviour
         lineRenderer.SetPosition(0, pointA.position);
         lineRenderer.SetPosition(1, midPoint);
         lineRenderer.SetPosition(2, pointB.position);
+
+        // initialize cost Node
+        costNode = Instantiate(costNodePrefab, midPoint, Quaternion.identity, graphManager.transform);
+        costNodeRenderer = costNode.GetComponent<SpriteRenderer>();
+        costNodeRenderer.color = lineRenderer.startColor;
+        costNodeText = costNode.GetComponentInChildren<TextMeshProUGUI>();
+        costNodeText.text = $"{edge.Cost}";
+
+        edgeLength = Vector3.Distance(pointA.position, midPoint) + Vector3.Distance(midPoint, pointB.position);
     }
 
     void Update()
     {
+        if (dragging || IsCut || edgeLength < 100f)
+            costNode.SetActive(false);
+        else
+            costNode.SetActive(true);
         if (GameData.LastCutPathPositions.Count >= 2)
             ProcessTouch();
         else if (GameData.LastCutPathPositions.Count == 0 && dragging)

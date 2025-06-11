@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-public class LevelSelection : MonoBehaviour {
+public class LevelSelection : MonoBehaviour
+{
     public GameObject buttonPrefab; // Assign MenuButtonPrefab in inspector
     public Transform contentParent; // Assign Content of Scroll View
     public ScrollRect scrollRect;
@@ -14,7 +15,8 @@ public class LevelSelection : MonoBehaviour {
             graphs = GameData.TutorialList.Graphs;
         else
             graphs = GameData.GraphHighScoreList.Graphs;
-            
+
+        int graphIndex = 0;
         foreach (Graph graph in graphs)
         {
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
@@ -34,9 +36,11 @@ public class LevelSelection : MonoBehaviour {
                 image.color = GameData.ColorPalette.edgeColors[colorIndex];
 
             // Optional: add a click handler
-            newButton.GetComponent<Button>().onClick.AddListener(() => OnLevelSelected(graph));
+            int currentIndex = graphIndex; // fixes closure issue
+            newButton.GetComponent<Button>().onClick.AddListener(() => OnLevelSelected(currentIndex));
+            graphIndex++;
         }
-        
+
         scrollRect.verticalNormalizedPosition = GameData.levelSelectionScrollPosition;
     }
 
@@ -45,9 +49,10 @@ public class LevelSelection : MonoBehaviour {
         GameData.levelSelectionScrollPosition = scrollRect.verticalNormalizedPosition;
     }
 
-    void OnLevelSelected(Graph graph) {
+    void OnLevelSelected(int graphIndex)
+    {
         GameData.SelectedChallenge = null;
-        GameData.SelectedGraph = graph;
+        GameData.SelectedGraphIndex = graphIndex;
         SceneManager.LoadScene("GameScene");
     }
 }

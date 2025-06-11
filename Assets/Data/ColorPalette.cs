@@ -9,6 +9,8 @@ public class ColorPalette : ScriptableObject
     [HideInInspector] public Color lowRemainingTimeColor;
     [HideInInspector] public Color invalidSolutionColor;
     [HideInInspector] public Color optimalSolutionColor;
+    [HideInInspector] public Color LevelCompleteTextColor;
+    [HideInInspector] public Color LevelCompleteButtonColor;
     [HideInInspector] public Color normalTextColor = Color.white;
 
     private void OnValidate()
@@ -18,6 +20,8 @@ public class ColorPalette : ScriptableObject
             invalidSolutionColor = edgeColors[edgeColors.Count - 1];
             lowRemainingTimeColor = edgeColors[edgeColors.Count - 1];
             optimalSolutionColor = edgeColors[0];
+            LevelCompleteTextColor = edgeColors[0];
+            LevelCompleteButtonColor = edgeColors[0];
         }
     }
 }

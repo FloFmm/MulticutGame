@@ -10,6 +10,7 @@ public static class GameData
     public static GraphList GraphList;
     public static GraphList GraphHighScoreList;
     public static Graph SelectedGraph;
+    public static int SelectedGraphIndex;
 
     // Challenge
     public static ChallengeList ChallengeList;
@@ -163,5 +164,20 @@ public static class GameData
         ChallengeHighScoreList.ChallengeHighScores.Add(newHighScore);
 
         return newHighScore;
+    }
+
+    public static void LoadLevelOrChallenge()
+    {
+        if (SelectedChallenge == null) // level or tutorial
+        {
+            if (IsTutorial)
+                SelectedGraph = TutorialList.Graphs[SelectedGraphIndex];
+            else
+                SelectedGraph = GraphHighScoreList.Graphs[SelectedGraphIndex];
+        }
+        else
+        {
+            SelectedGraph = SelectedChallengeGraphList[SelectedChallengeGraphIndex];
+        }
     }
 }

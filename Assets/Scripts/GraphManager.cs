@@ -16,22 +16,25 @@ public class GraphManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelNameText;
     public TextMeshProUGUI countdownText;
+    public RectTransform graphContainingRect;
     private List<GameObject> edges = new List<GameObject>();
     private int currentScore = 0;
     private Dictionary<int, GameObject> nodeIdToGameObjectMap;
+
+
     HashSet<int> componentIds = new HashSet<int>();
 
     void Start()
     {
+        GameData.LoadLevelOrChallenge();
         levelOverlay.SetActive(false);
         if (GameData.SelectedChallenge != null)
         {
             // challenge Mode
-            GameData.SelectedGraph = GameData.SelectedChallengeGraphList[GameData.SelectedChallengeGraphIndex];
             countdownText.gameObject.SetActive(true);
             if (GameData.SelectedChallengeGraphIndex == 0)
                 GameData.ChallengeStartTime = Time.time;
-            levelNameText.text = $"Level\n{GameData.SelectedChallengeGraphIndex + 1}\u00A0|\u00A0{GameData.SelectedChallengeGraphList.Count}";
+            levelNameText.text = $"LEVEL\n{GameData.SelectedChallengeGraphIndex + 1}\u00A0|\u00A0{GameData.SelectedChallengeGraphList.Count}";
         }
         else
         {
@@ -40,10 +43,12 @@ public class GraphManager : MonoBehaviour
             {
                 levelText.gameObject.SetActive(true);
                 levelText.GetComponent<ClickableText>().messages = GameData.SelectedGraph.Text;
+                levelNameText.text = $"LEVEL\n{GameData.SelectedGraphIndex + 1}\u00A0|\u00A0{GameData.TutorialList.Graphs.Count}";
             }
             else
             {
                 levelText.gameObject.SetActive(false);
+                levelNameText.text = $"LEVEL\n{GameData.SelectedGraphIndex + 1}\u00A0|\u00A0{GameData.GraphHighScoreList.Graphs.Count}";
             }
             countdownText.gameObject.SetActive(false);
         }
@@ -57,8 +62,6 @@ public class GraphManager : MonoBehaviour
         {
             componentIds.Add(i);
         }
-        // Debug.Log("on start:");
-        // Debug.Log(string.Join(", ", componentIds));
         GenerateGraph();
         updateConnectedComponents();
     }
@@ -71,6 +74,29 @@ public class GraphManager : MonoBehaviour
             updateCountDown();
         }
     }
+
+    private Rect GetGraphContainingRect()
+    {
+        Vector3[] corners = new Vector3[4];
+        graphContainingRect.GetWorldCorners(corners);
+        // corners: 0=bottom-left, 2=top-right
+        Vector3 bottomLeft = corners[0];
+        Vector3 topRight = corners[2];
+        // If the levelText is NOT active, expand the rect downward by 300 UI pixels converted to world units
+        if (!levelText.gameObject.activeInHierarchy)
+        {
+            // Convert 300 UI pixels to world units based on canvas scale
+            float pixelOffset = 250f;
+
+            // Use camera to convert screen delta to world delta
+            Vector3 worldOffset = Camera.main.ScreenToWorldPoint(new Vector3(0, pixelOffset, 0)) -
+                                Camera.main.ScreenToWorldPoint(Vector3.zero);
+
+            bottomLeft.y -= worldOffset.y;
+        }
+        return new Rect(bottomLeft.x, bottomLeft.y, topRight.x - bottomLeft.x, topRight.y - bottomLeft.y);
+    }
+
 
     void GenerateGraph()
     {
@@ -91,28 +117,26 @@ public class GraphManager : MonoBehaviour
         float graphHeight = maxY - minY;
 
         // Step 2: Determine screen size in world units
-        Vector3 bottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10f));
-        Vector3 topRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height * 0.9f, 10f));
-        float screenWorldWidth = topRight.x - bottomLeft.x;
-        float screenWorldHeight = topRight.y - bottomLeft.y;
+        Rect layoutRect = GetGraphContainingRect();
+        float screenWorldWidth = layoutRect.width;
+        float screenWorldHeight = layoutRect.height;
+        Vector2 screenCenter = new Vector2(layoutRect.x + layoutRect.width / 2f, layoutRect.y + layoutRect.height / 2f);
 
-        // Step 3: Calculate scale factor to fit graph into screen (with slight padding)
-        float padding = 0.8f;
+        // Step 3: Calculate scale factor to fit graph into screen
         float scaleX, scaleY;
         if (graphWidth != 0)
-            scaleX = screenWorldWidth / graphWidth * padding;
+            scaleX = screenWorldWidth / graphWidth;
         else
             scaleX = 1.0f;
 
         if (graphHeight != 0)
-            scaleY = screenWorldHeight / graphHeight * padding;
+            scaleY = screenWorldHeight / graphHeight;
         else
             scaleY = 1.0f;
         float scale = Mathf.Min(scaleX, scaleY); // keep aspect ratio
 
         // Step 4: Centering offset
         Vector2 graphCenter = new Vector2(minX + graphWidth / 2f, minY + graphHeight / 2f);
-        Vector2 screenCenter = new Vector2((bottomLeft.x + topRight.x) / 2f, (bottomLeft.y + topRight.y) / 2f);
 
         // Step 5: Instantiate nodes
         foreach (var node in GameData.SelectedGraph.Nodes)
@@ -194,7 +218,6 @@ public class GraphManager : MonoBehaviour
             }
             else if (numComponentsSubgraph != 1 && numComponentsSubgraph != 2)
                 throw new ArgumentException($"There should be 1 or 2 components in subgraph, not: {numComponentsSubgraph}", nameof(numComponentsSubgraph));
-            // Debug.Log(string.Join(", ", componentIds));
         }
 
         foreach (var node in GameData.SelectedGraph.Nodes)
@@ -262,11 +285,11 @@ public class GraphManager : MonoBehaviour
                 else if (GameData.IsTutorial) // tutorial
                 {
                     GameData.SelectedGraph.BestAchievedCost = currentScore;
-                    GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
                 }
                 else // normal level
                 {
                     GameData.SelectedGraph.BestAchievedCost = currentScore;
+                    GameData.SaveToPlayerPrefs("graphHighScoreList", GameData.GraphHighScoreList);
                 }
             }
             if (currentScore == GameData.SelectedGraph.OptimalCost)
@@ -274,7 +297,6 @@ public class GraphManager : MonoBehaviour
                 scoreText.color = GameData.ColorPalette.optimalSolutionColor;
                 string text = "LEVEL COMPLETE";
                 string buttonText = "NEXT LEVEL";
-                Color color = Color.green;
                 if (GameData.SelectedChallenge != null) //challenge
                 {
                     // update challenge highscore
@@ -291,7 +313,7 @@ public class GraphManager : MonoBehaviour
                 else // normal level
                 {
                 }
-                ActivateOverlay(text, buttonText, color, () => loadNextLevel());
+                ActivateOverlay(text, buttonText, () => loadNextLevel());
             }
             else
             {
@@ -318,8 +340,8 @@ public class GraphManager : MonoBehaviour
         edgeRenderer.pointB = nodeB.transform;
         edgeRenderer.Edge = edge;
     }
-    
-    public void ActivateOverlay(string text, string buttonText, Color color, UnityAction buttonAction)
+
+    public void ActivateOverlay(string text, string buttonText, UnityAction buttonAction)
     {
         // Find the main text by name
         levelOverlay.SetActive(true);
@@ -327,7 +349,7 @@ public class GraphManager : MonoBehaviour
         if (mainText != null)
         {
             mainText.text = text;
-            mainText.color = color;
+            mainText.color = GameData.ColorPalette.LevelCompleteTextColor;
         }
 
         //Find the button by name
@@ -339,6 +361,8 @@ public class GraphManager : MonoBehaviour
 
             if (button != null && buttonLabel != null)
             {
+                var image = button.GetComponent<Image>();
+                image.color = GameData.ColorPalette.LevelCompleteButtonColor;
                 buttonLabel.text = buttonText;
                 button.onClick.AddListener(buttonAction);
             }
@@ -349,21 +373,40 @@ public class GraphManager : MonoBehaviour
     {
         if (GameData.SelectedChallenge != null) //challenge
         {
-            if (GameData.SelectedChallengeGraphIndex == GameData.SelectedChallenge.LevelCount - 1)
+            GameData.SelectedChallengeGraphIndex += 1;
+            if (GameData.SelectedChallengeGraphIndex >= GameData.SelectedChallenge.LevelCount)
             {
                 SceneManager.LoadScene("ChallengeSelection");
+                return;
             }
-            else
-            {
-                GameData.SelectedChallengeGraphIndex += 1;
-                SceneManager.LoadScene("GameScene");
-            }
+            SceneManager.LoadScene("GameScene");
+            return;
         }
         else if (GameData.IsTutorial) // tutorial
         {
+            GameData.SelectedGraphIndex += 1;
+            if (GameData.SelectedGraphIndex >= GameData.TutorialList.Graphs.Count)
+            {
+                SceneManager.LoadScene("LevelSelection");
+                return;
+            }
+            SceneManager.LoadScene("GameScene");
+            return;
         }
         else // normal level
         {
-        } 
+            int offset = 1;
+            foreach (Graph graph in GameData.GraphHighScoreList.Graphs.Skip(GameData.SelectedGraphIndex + 1))
+            {
+                if (graph.BestAchievedCost != graph.OptimalCost)
+                {
+                    GameData.SelectedGraphIndex += offset;
+                    SceneManager.LoadScene("GameScene");
+                    return; // Stop further execution
+                }
+                offset++;
+            }
+            SceneManager.LoadScene("LevelSelection");
+        }
     }
 }
