@@ -115,7 +115,7 @@ public class EdgeRenderer : MonoBehaviour
         costNodeRenderer = costNode.GetComponent<SpriteRenderer>();
         costNodeRenderer.color = lineRenderer.startColor;
         costNodeText = costNode.GetComponentInChildren<TextMeshProUGUI>();
-        costNodeText.text = $"{edge.Cost}";
+        costNodeText.text = $"{-edge.Cost}";
 
         edgeLength = Vector3.Distance(pointA.position, midPoint) + Vector3.Distance(midPoint, pointB.position);
     }
@@ -126,10 +126,49 @@ public class EdgeRenderer : MonoBehaviour
             costNode.SetActive(false);
         else
             costNode.SetActive(true);
+
+        // only display costNode if its not close to an edge
+        if (costNode.activeInHierarchy)
+        {
+            foreach (GameObject other_edge in graphManager.getEdges())
+            {
+                if (gameObject != other_edge)
+                {
+                    float distance = GetPerpendicularDistance(
+                        other_edge.GetComponent<EdgeRenderer>().pointA.position,
+                        other_edge.GetComponent<EdgeRenderer>().pointB.position,
+                        costNode.transform.position
+                    );
+                    if (distance <= 50)
+                    {
+                        costNode.SetActive(false);
+                        break;
+                    }
+                }
+            }
+        }
+
+
         if (GameData.LastCutPathPositions.Count >= 2)
-            ProcessTouch();
-        else if (GameData.LastCutPathPositions.Count == 0 && dragging)
-            ResetMiddlePoint();
+                ProcessTouch();
+            else if (GameData.LastCutPathPositions.Count == 0 && dragging)
+                ResetMiddlePoint();
+    }
+
+    float GetPerpendicularDistance(Vector3 pointA, Vector3 pointB, Vector3 point)
+    {
+        Vector3 AB = pointB - pointA;
+        Vector3 AP = point - pointA;
+        
+        float magnitudeAB = AB.magnitude;
+        if (magnitudeAB == 0f)
+            return Vector3.Distance(pointA, point);  // A and B are the same point
+
+        float t = Vector3.Dot(AP, AB) / (magnitudeAB * magnitudeAB);
+        t = Mathf.Clamp01(t);  // clamp t to segment
+
+        Vector3 closestPoint = pointA + t * AB;
+        return Vector3.Distance(point, closestPoint);
     }
 
     // Process the current touch (or mouse) position.

@@ -332,7 +332,7 @@ public class GraphManager : MonoBehaviour
     {
         // Instantiate edge prefab
         GameObject edgeObj = Instantiate(edgePrefab, Vector3.zero, Quaternion.identity, this.transform);
-
+        edges.Add(edgeObj);
         // Set up edge renderer (assuming LineRenderer is set in the prefab)
         EdgeRenderer edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
         edgeRenderer.graphManager = this;
@@ -408,5 +408,11 @@ public class GraphManager : MonoBehaviour
             }
             SceneManager.LoadScene("LevelSelection");
         }
+    }
+
+
+    public List<GameObject> getEdges()
+    {
+        return edges;
     }
 }
