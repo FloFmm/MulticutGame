@@ -231,6 +231,7 @@ def is_valid_edge(
 
         if point_on_segment(pos, pos_u, pos_v, num_columns / 10.0):
             return False
+        
     return True
 
 
@@ -331,9 +332,12 @@ def remove_bridge(graph, bridge, num_columns):
     # Try to add an edge between any node in comp_u and any node in comp_v
     for node_u in comp_u:
         for node_v in comp_v:
-            if not graph.has_edge(node_u, node_v) and is_valid_edge(u, v, num_columns, graph, is_special_edge=False):
+            if node_u == node_v:
+                continue
+            if not graph.has_edge(node_u, node_v) and is_valid_edge(node_u, node_v, num_columns, graph, is_special_edge=True):
                 graph.add_edge(node_u, node_v)
-                return
+                return True
+    return False
 
 def generate_random_graph(
     node_count: int,
@@ -396,11 +400,9 @@ def generate_random_graph(
             ):
                 break
 
-    # remove bridges (all except 2)
+    # remove bridges if possible (add edges)
     for bridge in list(nx.bridges(graph)):
         remove_bridge(graph, bridge, num_columns)
-        if len(nx.bridges(list(graph))) <= 0:
-            break
 
 
     if not nx.is_connected(graph):
@@ -601,4 +603,11 @@ def main():
 
 
 if __name__ == "__main__":
+    # G = nx.Graph()
+    # edges = [
+    # (1, 2), (2, 3), (3, 4),  # linear chain (all bridges)
+    # ]
+    # G.add_edges_from(edges)
+    # remove_bridge(G, (2,3), 2)
+    # print(G.edges)
     main()
