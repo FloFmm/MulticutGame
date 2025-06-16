@@ -7,6 +7,8 @@ public class LevelSelection : MonoBehaviour
 {
     public GameObject buttonPrefab; // Assign MenuButtonPrefab in inspector
     public Transform contentParent; // Assign Content of Scroll View
+    public GameObject sectionPrefab;
+    public GameObject headlinePrefab;
     public ScrollRect scrollRect;
     private List<Graph> graphs;
     void Start()
@@ -17,9 +19,29 @@ public class LevelSelection : MonoBehaviour
             graphs = GameData.GraphHighScoreList.Graphs;
 
         int graphIndex = 0;
+        string[] difficultyLabels = {"EASY", "MEDIUM", "ADVANCED", "EXPERT", "EXTREME"};
+        int sectionIndex = 0;
+        GameObject currentHeadline = null;
+        GameObject currentSection = null;
+
+        if (GameData.IsTutorial)
+        {
+            currentHeadline = Instantiate(headlinePrefab, contentParent);
+            currentHeadline.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "TUTORIAL";
+            currentSection = Instantiate(sectionPrefab, contentParent);
+        }
+
         foreach (Graph graph in graphs)
         {
-            GameObject newButton = Instantiate(buttonPrefab, contentParent);
+            if (!GameData.IsTutorial && graphIndex % (graphs.Count / 5) == 0)
+            {
+                currentHeadline = Instantiate(headlinePrefab, contentParent);
+                currentHeadline.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = difficultyLabels[sectionIndex];
+                sectionIndex++;
+
+                currentSection = Instantiate(sectionPrefab, contentParent);
+            }
+            GameObject newButton = Instantiate(buttonPrefab, currentSection.transform);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = graph.Name;
 
             // Compute ratio

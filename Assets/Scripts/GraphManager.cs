@@ -31,6 +31,7 @@ public class GraphManager : MonoBehaviour
         if (GameData.SelectedChallenge != null)
         {
             // challenge Mode
+            levelText.gameObject.SetActive(false);
             countdownText.gameObject.SetActive(true);
             if (GameData.SelectedChallengeGraphIndex == 0)
                 GameData.ChallengeStartTime = Time.time;

@@ -8,6 +8,7 @@ using System;
 public class ChallengeSelection : MonoBehaviour {
     public GameObject buttonPrefab; // Assign MenuButtonPrefab in inspector
     public Transform contentParent; // Assign Content of Scroll View
+    public GameObject headlinePrefab;
     void Start()
     {
         int i = 0;
@@ -17,11 +18,11 @@ public class ChallengeSelection : MonoBehaviour {
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = challenge.Name;
             // Set HighScore and TimeLimit (in 2 columns below)
-            int levelCount = Math.Min(
-                GameData.GraphList.Graphs.Count(graph =>
-                    graph.Difficulty >= challenge.MinDifficulty &&
-                    graph.Difficulty <= challenge.MaxDifficulty),
-                challenge.LevelCount);
+            int totalGraphs = GameData.GraphList.Graphs.Count;
+            int startIndex = Mathf.FloorToInt(challenge.MinDifficulty * totalGraphs);
+            int endIndex = Mathf.CeilToInt(challenge.MaxDifficulty * totalGraphs);
+            int levelCount = endIndex - startIndex;
+
             int highScore = GameData.GetHighScoreForChallenge(challenge).HighScore;
             newButton.transform.Find("VerticalGroup/HorizontalGroup/Text_HighScore")
                 .GetComponent<TMPro.TextMeshProUGUI>().text = $"BEST\n{highScore} | {levelCount}";
@@ -37,20 +38,22 @@ public class ChallengeSelection : MonoBehaviour {
                 buttonImage.color = GameData.ColorPalette.edgeColors[GameData.ColorPalette.edgeColors.Count - 1];
             i++;
             newButton.GetComponent<Button>().onClick.AddListener(() => OnChallengeSelected(challenge));
-            
+
         }
     }
 
     void OnChallengeSelected(Challenge challenge)
     {
+        int totalGraphs = GameData.GraphList.Graphs.Count;
+        int startIndex = Mathf.FloorToInt(challenge.MinDifficulty * totalGraphs);
+        int endIndex = Mathf.CeilToInt(challenge.MaxDifficulty * totalGraphs);
         List<Graph> challengeGraphList = new List<Graph>();
-        foreach (Graph graph in GameData.GraphList.Graphs)
+        foreach (Graph graph in GameData.GraphList.Graphs.GetRange(startIndex, endIndex - startIndex))
         {
-            if (graph.Difficulty >= challenge.MinDifficulty && graph.Difficulty <= challenge.MaxDifficulty)
-            {
-                challengeGraphList.Add(graph.DeepCopy());
-            }
+            challengeGraphList.Add(graph.DeepCopy());
         }
+
+
         System.Random rng = new System.Random((int)DateTime.Now.Ticks);
         GameData.SelectedChallenge = challenge;
         List<Graph> shuffled = challengeGraphList.OrderBy(_ => rng.Next()).ToList();
