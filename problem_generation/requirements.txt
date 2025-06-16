@@ -2,3 +2,4 @@ gurobipy
 networkx
 numpy
 matplotlib
+tqdm
