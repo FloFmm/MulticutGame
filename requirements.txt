@@ -2,7 +2,7 @@ gurobipy
 networkx
 numpy
 matplotlib
-
+tqdm
 
 # server
 flask==3.0.3

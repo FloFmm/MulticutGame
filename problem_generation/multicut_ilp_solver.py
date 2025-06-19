@@ -231,6 +231,7 @@ def is_valid_edge(
 
         if point_on_segment(pos, pos_u, pos_v, num_columns / 10.0):
             return False
+        
     return True
 
 
@@ -318,6 +319,25 @@ def connect_two_random_components(
                         return True
     return False
 
+def remove_bridge(graph, bridge, num_columns):
+    (u,v) = bridge
+    graph.remove_edge(u, v)
+    components = list(nx.connected_components(graph))
+    graph.add_edge(u, v)  # Restore the original edge
+
+    # Find the components that u and v belong to
+    comp_u = next(c for c in components if u in c)
+    comp_v = next(c for c in components if v in c)
+
+    # Try to add an edge between any node in comp_u and any node in comp_v
+    for node_u in comp_u:
+        for node_v in comp_v:
+            if node_u == node_v:
+                continue
+            if not graph.has_edge(node_u, node_v) and is_valid_edge(node_u, node_v, num_columns, graph, is_special_edge=True):
+                graph.add_edge(node_u, node_v)
+                return True
+    return False
 
 def generate_random_graph(
     node_count: int,
@@ -380,6 +400,11 @@ def generate_random_graph(
             ):
                 break
 
+    # remove bridges if possible (add edges)
+    for bridge in list(nx.bridges(graph)):
+        remove_bridge(graph, bridge, num_columns)
+
+
     if not nx.is_connected(graph):
         # if num_columns == 3:
         #     pos = nx.get_node_attributes(graph, "pos")
@@ -399,6 +424,7 @@ def generate_random_graph(
 
     # Solve the multicut problem for the graph
     multicut, optimal_cost = solve_multicut(graph, costs, log=False)
+
 
     # atleast one positive edge must be cut
     # num_cut_edges_with_positive_cost = len(
@@ -559,13 +585,13 @@ def generate(
 def main():
     output_path = "Assets/Resources/graphList.json"
     generate(
-        graph_count=200000,
+        graph_count=130, # biggest till now 200.000
         graph_size_range=(5, 50),
         output_path=output_path,
         cost_probs_ranges=[
             (0.1, 0.6),
             (0.1, 0.6),
-            (0.1, 0.6),
+            (0.1, 0.2),
             (0.1, 0.6),
             (0.1, 0.6),
         ],
@@ -577,4 +603,11 @@ def main():
 
 
 if __name__ == "__main__":
+    # G = nx.Graph()
+    # edges = [
+    # (1, 2), (2, 3), (3, 4),  # linear chain (all bridges)
+    # ]
+    # G.add_edges_from(edges)
+    # remove_bridge(G, (2,3), 2)
+    # print(G.edges)
     main()
