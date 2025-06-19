@@ -22,7 +22,7 @@ public class MainMenu : MonoBehaviour
 
     public void OnClickLeaderboard()
     {
-        Debug.Log("Leaderboard clicked");
+        SceneManager.LoadScene("Leaderboard");
     }
 
     public void OnClickSettings()

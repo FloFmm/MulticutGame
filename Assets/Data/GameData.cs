@@ -20,6 +20,9 @@ public static class GameData
     public static int SelectedChallengeGraphIndex;
     public static float ChallengeStartTime;
 
+    // Leaderboard
+    public static LeaderboardEntryList Leaderboard;
+
     // Tutorial
     public static bool IsTutorial = false;
     public static GraphList TutorialList;
@@ -48,6 +51,7 @@ public static class GameData
         LoadGraphHighScoreList();
         LoadChallengeList();
         LoadChallengeHighScoreList();
+        LoadLeaderboard();
         LastCutPathPositions = new List<Vector3>();
         LastCutEdges = new List<GameObject>();
     }
@@ -88,6 +92,11 @@ public static class GameData
     public static void LoadTutorialList()
     {
         TutorialList = LoadFromFile<GraphList>("tutorialList");
+    }
+
+    public static void LoadLeaderboard()
+    {
+        Leaderboard = LoadFromFile<LeaderboardEntryList>("leaderboard");
     }
 
     public static void LoadGraphHighScoreList()

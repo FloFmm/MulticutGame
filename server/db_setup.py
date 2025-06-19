@@ -83,4 +83,5 @@ def main():
     conn.close()
 
 if __name__ == '__main__':
+    # call this function together with the external connection link fromr ender to set up data base
     main()
