@@ -7,20 +7,20 @@ from psycopg2.extras import RealDictCursor
 app = Flask(__name__)
 CORS(app)
 
-DB_PARAMS = {
-    'dbname': 'testdb',
-    'user': 'testuser',
-    'password': 'testpass',
-    'host': 'localhost',  # e.g., 'localhost' or Render DB hostname
-    'port': 5432,         # default PostgreSQL port
-}
 # DB_PARAMS = {
-#     'dbname': os.getenv('DB_NAME'),
-#     'user': os.getenv('DB_USER'),
-#     'password': os.getenv('DB_PASSWORD'),
-#     'host': os.getenv('DB_HOST'),
-#     'port': int(os.getenv('DB_PORT', 5432)),
+#     'dbname': 'testdb',
+#     'user': 'testuser',
+#     'password': 'testpass',
+#     'host': 'localhost',  # e.g., 'localhost' or Render DB hostname
+#     'port': 5432,         # default PostgreSQL port
 # }
+DB_PARAMS = {
+    'dbname': os.getenv('DB_NAME'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+    'port': int(os.getenv('DB_PORT', 5432)),
+}
 
 def get_conn():
     return psycopg2.connect(**DB_PARAMS)
