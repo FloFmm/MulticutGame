@@ -26,11 +26,11 @@ def get_db_params():
     else:
         print("No DB URL argument provided, falling back to environment variables.")
         return {
-            'dbname': os.getenv('DB_NAME'),
-            'user': os.getenv('DB_USER'),
-            'password': os.getenv('DB_PASSWORD'),
-            'host': os.getenv('DB_HOST'),
-            'port': int(os.getenv('DB_PORT', 5432)),
+            'dbname': "testdb", #os.getenv('DB_NAME'),
+            'user': "testuser", #os.getenv('DB_USER'),
+            'password':"testpass", #os.getenv('DB_PASSWORD'),
+            'host': "localhost",#os.getenv('DB_HOST'),
+            'port': 5432#int(os.getenv('DB_PORT', 5432)),
         }
     
 def main():
@@ -40,13 +40,44 @@ def main():
     cur = conn.cursor()
 
     # Create table if not exists
+    # cur.execute('''
+    # CREATE TABLE IF NOT EXISTS highscores (
+    #     id SERIAL PRIMARY KEY,
+    #     player TEXT NOT NULL,
+    #     score INTEGER NOT NULL
+    # );
+    # ''')
     cur.execute('''
-    CREATE TABLE IF NOT EXISTS highscores (
-        id SERIAL PRIMARY KEY,
-        player TEXT NOT NULL,
-        score INTEGER NOT NULL
-    );
+        CREATE TABLE IF NOT EXISTS players (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS levels (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS player_levels_done (
+            player_id TEXT REFERENCES players(id) ON DELETE CASCADE,
+            level_id TEXT REFERENCES levels(id) ON DELETE CASCADE,
+            PRIMARY KEY (player_id, level_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS challenges (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS player_challenges (
+            player_id TEXT REFERENCES players(id) ON DELETE CASCADE,
+            challenge_id TEXT REFERENCES challenges(id) ON DELETE CASCADE,
+            highscore INTEGER NOT NULL,
+            time_taken FLOAT NOT NULL,
+            PRIMARY KEY (player_id, challenge_id)
+        );
     ''')
+
 
     cur.close()
     conn.close()
