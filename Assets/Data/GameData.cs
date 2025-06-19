@@ -69,13 +69,13 @@ public static class GameData
         return null;
     }
 
-    public static T LoadFromFile<T>(string key) where T : class
+    public static T LoadFromFile<T>(string key) where T : class, new()
     {
         TextAsset jsonFile = Resources.Load<TextAsset>(key);
         if (jsonFile == null)
         {
             Debug.LogError($"File not found at Resources/{key}");
-            return null;
+            return new T();
         }
         return JsonUtility.FromJson<T>(jsonFile.text);
     }
