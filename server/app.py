@@ -1,21 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
+import os 
 from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 CORS(app)
 
+# DB_PARAMS = {
+#     'dbname': 'testdb',
+#     'user': 'testuser',
+#     'password': 'testpass',
+#     'host': 'localhost',  # e.g., 'localhost' or Render DB hostname
+#     'port': 5432,         # default PostgreSQL port
+# }
 DB_PARAMS = {
-    'dbname': 'testdb',
-    'user': 'testuser',
-    'password': 'testpass',
-    'host': 'localhost',  # e.g., 'localhost' or Render DB hostname
-    'port': 5432,         # default PostgreSQL port
+    'dbname': os.getenv('DB_NAME'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+    'port': int(os.getenv('DB_PORT', 5432)),
 }
 
 def get_conn():
     return psycopg2.connect(**DB_PARAMS)
+
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({'message': 'Welcome to the Highscores API'})
 
 @app.route('/submit', methods=['POST'])
 def submit_score():
