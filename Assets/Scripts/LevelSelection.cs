@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System;
+using System.Collections;
+
 
 public class LevelSelection : MonoBehaviour
 {
@@ -19,7 +22,7 @@ public class LevelSelection : MonoBehaviour
             graphs = GameData.GraphHighScoreList.Graphs;
 
         int graphIndex = 0;
-        string[] difficultyLabels = {"EASY", "MEDIUM", "ADVANCED", "EXPERT", "EXTREME"};
+        string[] difficultyLabels = { "EASY", "MEDIUM", "ADVANCED", "EXPERT", "EXTREME" };
         int sectionIndex = 0;
         GameObject currentHeadline = null;
         GameObject currentSection = null;
@@ -33,7 +36,7 @@ public class LevelSelection : MonoBehaviour
 
         foreach (Graph graph in graphs)
         {
-            if (!GameData.IsTutorial && graphIndex % (graphs.Count / 5) == 0)
+            if (!GameData.IsTutorial && graphIndex % (int)Math.Ceiling(graphs.Count / 5.0) == 0)
             {
                 currentHeadline = Instantiate(headlinePrefab, contentParent);
                 currentHeadline.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = difficultyLabels[sectionIndex];
@@ -49,8 +52,17 @@ public class LevelSelection : MonoBehaviour
             ratio = Mathf.Clamp01(ratio); // Ensure between 0 and 1
 
             // Determine color bucket
-            int colorIndex = Mathf.FloorToInt((1.0f - ratio) * (GameData.ColorPalette.edgeColors.Count - 1));
-            colorIndex = Mathf.Clamp(colorIndex, 0, GameData.ColorPalette.edgeColors.Count - 1);
+            int colorIndex;
+            if (ratio >= 1f)
+                colorIndex = 0;
+            else if (ratio >= 0.75f)
+                colorIndex = 1;
+            else if (ratio >= 0.5f)
+                colorIndex = 2;
+            else if (ratio >= 0.25f)
+                colorIndex = 3;
+            else
+                colorIndex = 4;
 
             // Apply color (to Image component on the button)
             var image = newButton.GetComponent<Image>();
@@ -63,11 +75,20 @@ public class LevelSelection : MonoBehaviour
             graphIndex++;
         }
 
-        scrollRect.verticalNormalizedPosition = GameData.levelSelectionScrollPosition;
+        StartCoroutine(RestoreScrollPositionNextFrame(GameData.levelSelectionScrollPosition));
+    }
+
+    IEnumerator RestoreScrollPositionNextFrame(float lastYPosition)
+    {
+        yield return null; // Wait 1 frame
+        yield return null; // Wait 1 frame
+        yield return null; // Wait 1 frame
+        scrollRect.verticalNormalizedPosition = lastYPosition;
     }
 
     public void OnScrollChanged()
     {
+        Debug.Log("OnScrollChanged: " + scrollRect.verticalNormalizedPosition);
         GameData.levelSelectionScrollPosition = scrollRect.verticalNormalizedPosition;
     }
 

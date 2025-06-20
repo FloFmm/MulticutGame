@@ -27,6 +27,7 @@ public class EdgeRenderer : MonoBehaviour
     private Vector3 midPoint;          // Current position of the (invisible) middle point
     private bool dragging = false;      // Whether the user is currently dragging
     private float pitch;
+    private float volume;
     private Edge edge;
     public Edge Edge
     {
@@ -55,10 +56,15 @@ public class EdgeRenderer : MonoBehaviour
             lineRenderer.startColor = GameData.ColorPalette.edgeColors[lineType];
             lineRenderer.endColor = GameData.ColorPalette.edgeColors[lineType];
             pitch = GameData.edgePitches[lineType];
+            volume = GameData.edgeVolumes[lineType];
 
             // cost Node
             if (costNodeRenderer != null)
-                costNodeRenderer.color = lineRenderer.startColor;
+            {
+                Color c = lineRenderer.startColor;
+                c.a = 1f;
+                costNodeRenderer.color = c;
+            }
             if (costNodeText != null)
                 costNodeText.text = $"{edge.Cost}";
         }
@@ -113,7 +119,11 @@ public class EdgeRenderer : MonoBehaviour
         // initialize cost Node
         costNode = Instantiate(costNodePrefab, midPoint, Quaternion.identity, graphManager.transform);
         costNodeRenderer = costNode.GetComponent<SpriteRenderer>();
-        costNodeRenderer.color = lineRenderer.startColor;
+
+        // set cost node properties
+        Color c = lineRenderer.startColor;
+        c.a = 1f;
+        costNodeRenderer.color = c;
         costNodeText = costNode.GetComponentInChildren<TextMeshProUGUI>();
         costNodeText.text = $"{-edge.Cost}";
 
@@ -223,7 +233,7 @@ public class EdgeRenderer : MonoBehaviour
     {
         dragging = false;
         midPoint = (pointA.position + pointB.position) * 0.5f;
-        GetComponent<SoundPlayer>().PlaySoundWithPitch(pitch);
+        GetComponent<SoundPlayer>().PlaySoundWithPitch(pitch, volume);
         UpdateLine();
     }
 

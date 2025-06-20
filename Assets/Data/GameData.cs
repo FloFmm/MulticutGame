@@ -28,7 +28,7 @@ public static class GameData
     public static GraphList TutorialList;
 
     // UI
-    public static float levelSelectionScrollPosition = 0.0f;
+    public static float levelSelectionScrollPosition = 1.0f;
     public static bool ScissorIsActive; // toggle between scissor and rubber
     public static List<Vector3> LastCutPathPositions;
     public static List<GameObject> LastCutEdges;
@@ -38,7 +38,8 @@ public static class GameData
     // Settings
     public static readonly List<int> edgeCosts = new List<int> { -2, -1, 0, 1, 2 };
     public static readonly List<float> edgeWidths = new List<float> { 6f, 6f, 6f, 6f, 6f };
-    public static readonly List<float> edgePitches = new List<float> { 0.2f, 0.55f, 0.9f, 1.25f, 1.6f };
+    public static readonly List<float> edgePitches = new List<float> { 0.6f, 0.8f, 1.0f, 1.3f, 1.6f };
+    public static readonly List<float> edgeVolumes = new List<float> { 1.0f, 0.85f, 0.7f, 0.55f, 0.4f };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Init()

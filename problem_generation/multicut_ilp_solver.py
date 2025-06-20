@@ -94,6 +94,41 @@ def edges_intersect(p1, p2, q1, q2):
     return (ccw(p1, q1, q2) != ccw(p2, q1, q2)) and (ccw(p1, p2, q1) != ccw(p1, p2, q2))
 
 
+def count_edge_crossings(graph_data):
+    # Build a dict from node id to position
+    positions = {
+        node["Id"]: (node["Position"]["x"], node["Position"]["y"])
+        for node in graph_data["Nodes"]
+    }
+
+    # Extract all edges with coordinates
+    edges_with_coords = [
+        (
+            edge["FromNodeId"],
+            edge["ToNodeId"],
+            positions[edge["FromNodeId"]],
+            positions[edge["ToNodeId"]],
+        )
+        for edge in graph_data["Edges"]
+    ]
+
+    crossing_count = 0
+    n = len(edges_with_coords)
+
+    # Check each pair of edges
+    for i in range(n):
+        u1, v1, p1, p2 = edges_with_coords[i]
+        for j in range(i + 1, n):
+            u2, v2, q1, q2 = edges_with_coords[j]
+            # Avoid checking edges that share a node
+            if len({u1, v1, u2, v2}) < 4:
+                continue
+            if edges_intersect(p1, p2, q1, q2):
+                crossing_count += 1
+
+    return crossing_count
+
+
 def point_on_segment(p, a, b, eps=1e-8):
     """Check if point p lies within perpendicular distance 1 of segment a-b"""
     (px, py), (ax, ay), (bx, by) = p, a, b
@@ -178,6 +213,61 @@ def get_node_pos_from_id(graph, node_id):
             return pos
 
 
+def can_add_special_edge(graph, u, v, pos_u, pos_v, max_intersections=3):
+    intersecting_edges = []
+
+    for a, b in graph.edges:
+        if set((u, v)) & set((a, b)):
+            continue  # Skip edges sharing a node
+
+        if edges_intersect(pos_u, pos_v, graph.nodes[a]["pos"], graph.nodes[b]["pos"]):
+            intersecting_edges.append((a, b))
+
+    # Check if special edge intersects with too many edges
+    if len(intersecting_edges) > max_intersections:
+        return False
+
+    # Check if any of the intersected edges already intersect with too many
+    for a, b in intersecting_edges:
+        count = 0
+        for x, y in graph.edges:
+            if (a, b) == (x, y) or set((a, b)) & set((x, y)):
+                continue  # Skip self or shared nodes
+
+            if edges_intersect(
+                graph.nodes[a]["pos"],
+                graph.nodes[b]["pos"],
+                graph.nodes[x]["pos"],
+                graph.nodes[y]["pos"],
+            ):
+                count += 1
+
+            # Account for the new intersection with (u, v)
+            if count + 1 > max_intersections:
+                return False
+            
+    # Check for cardinality 1 nodes after adding (u,v) ---
+    # Count degree for all nodes
+    degree = {node: 0 for node in graph.nodes}
+    for a, b in graph.edges:
+        degree[a] += 1
+        degree[b] += 1
+    # Include the special edge
+    degree[u] += 1
+    degree[v] += 1
+
+    # Check if (u, v) connects to a node that would have degree 1
+    if degree[u] == 1 or degree[v] == 1:
+        return False
+
+    # Check if any intersected edge connects to a node that would have degree 1
+    for a, b in intersecting_edges:
+        if degree[a] == 1 or degree[b] == 1:
+            return False
+
+    return True
+
+
 def is_valid_edge(
     u, v, num_columns: int, graph: nx.Graph, is_special_edge: bool = False
 ):
@@ -188,7 +278,11 @@ def is_valid_edge(
     pos_u = graph.nodes[u]["pos"]
     pos_v = graph.nodes[v]["pos"]
 
-    if not is_special_edge:
+    if is_special_edge:
+        # edges may intersect with at most max_intersections other edges
+        if not can_add_special_edge(graph, u, v, pos_u, pos_v, max_intersections=3):
+            return False
+    else:
         # Check for intersection with existing edges
         for a, b in graph.edges:
             if set((u, v)) & set((a, b)):
@@ -231,7 +325,7 @@ def is_valid_edge(
 
         if point_on_segment(pos, pos_u, pos_v, num_columns / 10.0):
             return False
-        
+
     return True
 
 
@@ -247,111 +341,138 @@ def count_cut_edges_by_cost(multicut, costs):
     return num_cut_edges_by_cost
 
 
-def calc_level_difficulty(graph_data, min_max_stats):
-    difficulty = 0
+def raw_level_difficutly_stats(graph_data):
+    info = defaultdict(int)
+
+    num_nodes = len(graph_data["Nodes"])
+    num_edges = len(graph_data["Edges"])
     num_cut_edges = len([e for e in graph_data["Edges"] if e["OptimalCut"]])
     num_not_cut_edges = len([e for e in graph_data["Edges"] if not e["OptimalCut"]])
     num_cut_edges_with_positive_cost = len(
         [e for e in graph_data["Edges"] if e["OptimalCut"] and e["Cost"] > 0]
     )
-    num_special_edges = len(
-        [e for e in graph_data["Edges"] if e["OptimalCut"] and e["IsSpecial"]]
+
+    info["num_nodes"] = num_nodes
+    info["num_edges"] = num_edges
+    info["num_cut_edges"] = num_cut_edges
+    info["num_not_cut_edges"] = num_not_cut_edges
+    info["num_cut_edges_with_positive_cost"] = num_cut_edges_with_positive_cost
+    info["num_edge_crossings"] = count_edge_crossings(graph_data)
+
+    return info
+
+
+def calc_min_max_stats(info_list):
+    if not info_list:
+        return {}
+
+    keys = info_list[0].keys()
+    min_max_stats = {}
+
+    for key in keys:
+        values = [info[key] for info in info_list]
+        min_max_stats[key] = {
+            "min": min(values),
+            "max": max(values),
+        }
+
+    return min_max_stats
+
+
+def calc_level_difficulty(graph_data, min_max_stats):
+    info = raw_level_difficutly_stats(graph_data)
+    difficulty_dict = defaultdict(int)
+
+    balance_cut_not_cut = (
+        2
+        * min(info["num_cut_edges"], info["num_not_cut_edges"])
+        / (info["num_cut_edges"] + info["num_not_cut_edges"])
     )
 
-    max_num_cut_edges_with_positive_cost = min_max_stats[
-        "max_num_cut_edges_with_positive_cost"
-    ]
-    difficulty += ( #0.2 if the same nubmer of edges is cut and not cut
-        0.2
-        * 2
-        * min(num_cut_edges, num_not_cut_edges)
-        / (num_cut_edges + num_not_cut_edges)
+    for key in info.keys():
+        range = min_max_stats[key]["max"] - min_max_stats[key]["min"]
+        if range > 0:
+            difficulty_dict[key] = (info[key] - min_max_stats[key]["min"]) / range
+
+    difficulty = (
+        balance_cut_not_cut * 0.4
+        + difficulty_dict["num_nodes"] * 0.0
+        + difficulty_dict["num_edges"] * 0.0
+        + difficulty_dict["num_cut_edges"] * 0.0
+        + difficulty_dict["num_not_cut_edges"] * 0.0
+        + difficulty_dict["num_cut_edges_with_positive_cost"] * 0.4
+        + difficulty_dict["num_edge_crossings"] * 0.2
     )
-
-    if max_num_cut_edges_with_positive_cost > 0:
-        difficulty += (
-            0.4
-            * num_cut_edges_with_positive_cost
-            / max_num_cut_edges_with_positive_cost
-        )
-    max_num_cut_edges = min_max_stats["max_num_cut_edges"]
-    if max_num_cut_edges > 0:
-        difficulty += 0.1 * num_cut_edges / max_num_cut_edges
-    min_nodes = min_max_stats["min_nodes"]
-    max_nodes = min_max_stats["max_nodes"]
-    if max_nodes - min_nodes > 0:
-        difficulty += (
-            0.1 * (len(graph_data["Nodes"]) - min_nodes) / (max_nodes - min_nodes)
-        )
-    min_edges = min_max_stats["min_edges"]
-    max_edges = min_max_stats["max_edges"]
-    if max_edges - min_edges > 0:
-        difficulty += (
-            0.1 * (len(graph_data["Edges"]) - min_edges) / (max_edges - min_edges)
-        )
-    min_special_edges = min_max_stats["min_special_edges"]
-    max_special_edges = min_max_stats["max_special_edges"]
-    if (max_special_edges - min_special_edges) > 0:
-        difficulty += (
-            0.1
-            * (num_special_edges - min_special_edges)
-            / (max_special_edges - min_special_edges)
-        )
-
+    assert difficulty <= 1.0
     return difficulty
 
 
-def connect_two_random_components(
-    graph, num_columns: int, components: List, is_special_edge: bool = False
-):
-    comps = random.sample(list(components), k=len(components))
-    for comp1 in comps:
-        for comp2 in comps:
-            if set(comp1) == set(comp2):
-                continue
-            for u in random.sample(list(comp1), k=len(comp1)):
-                for v in random.sample(list(comp2), k=len(comp2)):
-                    if is_valid_edge(
-                        u, v, num_columns, graph, is_special_edge=is_special_edge
-                    ):
-                        # Add an edge to connect them
-                        graph.add_edge(u, v)
-                        return True
-    return False
+def promote_edges_to_connect_high_cost(G, costs):
+    # Step 1: Create a subgraph of edges with cost 1 or 2
+    high_edges = [(u, v) for (u, v), cost in costs.items() if cost in [1, 2]]
+    G_high = nx.Graph()
+    G_high.add_nodes_from(G.nodes)
+    G_high.add_edges_from(high_edges)
 
-def remove_bridge(graph, bridge, num_columns):
-    (u,v) = bridge
-    graph.remove_edge(u, v)
-    components = list(nx.connected_components(graph))
-    graph.add_edge(u, v)  # Restore the original edge
+    # Step 2: Find connected components of the high-cost subgraph
+    components = [c for c in nx.connected_components(G_high) if len(c) > 1]
+    if len(components) <= 1:
+        return costs.copy()
 
-    # Find the components that u and v belong to
-    comp_u = next(c for c in components if u in c)
-    comp_v = next(c for c in components if v in c)
+    # Step 3: Map each node to its component
+    comp_map = {}
+    for i, comp in enumerate(components):
+        for node in comp:
+            comp_map[node] = i
 
-    # Try to add an edge between any node in comp_u and any node in comp_v
-    for node_u in comp_u:
-        for node_v in comp_v:
-            if node_u == node_v:
-                continue
-            if not graph.has_edge(node_u, node_v) and is_valid_edge(node_u, node_v, num_columns, graph, is_special_edge=True):
-                graph.add_edge(node_u, node_v)
-                return True
-    return False
+    # Step 4: Find all edges that can connect different components (with cost < 1)
+    edges_between_comps = []
+    for (u, v), cost in costs.items():
+        cu, cv = comp_map.get(u), comp_map.get(v)
+        if cu is not None and cv is not None and cu != cv and cost < 1:
+            promoted_cost = random.choice([1, 2])  # 50% chance for 1 or 2
+            edges_between_comps.append(
+                (cu, cv, {"orig": (u, v), "cost": promoted_cost})
+            )  # promote cost
+
+    # Step 5: Build MST on component graph
+    comp_graph = nx.Graph()
+    comp_graph.add_edges_from(edges_between_comps)
+    mst_edges = list(nx.minimum_spanning_edges(comp_graph, data=True))
+
+    # Step 6: Build new costs dictionary with promoted edges
+    new_costs = costs.copy()
+    for edge in mst_edges:
+        u, v = edge[2]["orig"]
+        key = (u, v) if (u, v) in new_costs else (v, u)
+        new_costs[key] = edge[2]["cost"]  # promote cost
+
+    return new_costs
+
+
+def count_edges_by_cost(graph_data_list):
+    cost_count = defaultdict(int)
+
+    for graph_data in graph_data_list:
+        for edge in graph_data["Edges"]:
+            cost = edge["Cost"]
+            cost_count[cost] += 1
+
+    return dict(cost_count)
+
 
 def generate_random_graph(
     node_count: int,
-    average_kardinality: int,
     cost_probs_ranges: List[tuple[float]],
     available_costs: List[int],
     density_range: tuple[float],
-    num_special_edges_range: tuple[int],
 ):
     density = random.uniform(*density_range)
-    num_special_edges = random.randint(*num_special_edges_range)
     cost_probs = generate_random_prob_distribution(cost_probs_ranges)
 
-    num_columns = math.ceil((node_count / 2 / density) ** 0.5)
+    num_columns = min(
+        math.ceil((node_count / 2 / density) ** 0.5), 8
+    )  # at most 8 columns
     # Step 1: Create grid positions
     positions = [(x, y) for x in range(num_columns) for y in range(2 * num_columns)]
     # Step 2: Randomly select graph_size nodes
@@ -361,79 +482,47 @@ def generate_random_graph(
     graph = nx.Graph()
     for idx, pos in enumerate(selected_positions):
         graph.add_node(idx, pos=pos)
-    # Step 3: Iteratively add edges
+    # Step 3: Iteratively add edges until no more can be added
     possible_pairs = list(combinations(graph.nodes, 2))
     random.shuffle(possible_pairs)
     for u, v in possible_pairs:
         if not is_valid_edge(u, v, num_columns, graph):
             continue
         graph.add_edge(u, v)
-        # Check stopping condition
-        if (
-            2 * (graph.number_of_edges() + num_special_edges) / node_count
-            > average_kardinality
-        ):
-            break
 
     # add a few special edges that can intersect
     special_edges = []
     random.shuffle(possible_pairs)
     i = 0
     for u, v in possible_pairs:
-        if i == num_special_edges:
-            break
         if not is_valid_edge(u, v, num_columns, graph, is_special_edge=True):
             continue
         graph.add_edge(u, v)
         i += 1
         special_edges.append((u, v))
 
-    # Check if the graph is connected, if not, add edges to connect it
-    while not nx.is_connected(graph):
-        components = list(nx.connected_components(graph))
-
-        if not connect_two_random_components(
-            graph, num_columns, components, is_special_edge=False
-        ):
-            if not connect_two_random_components(
-                graph, num_columns, components, is_special_edge=True
-            ):
-                break
-
-    # remove bridges if possible (add edges)
-    for bridge in list(nx.bridges(graph)):
-        remove_bridge(graph, bridge, num_columns)
-
+    # Remove nodes in components of size 1 and update possible pairs
+    for component in list(nx.connected_components(graph)):
+        if len(component) == 1:
+            graph.remove_nodes_from(component)
+    possible_pairs = list(combinations(graph.nodes, 2))
 
     if not nx.is_connected(graph):
-        # if num_columns == 3:
-        #     pos = nx.get_node_attributes(graph, "pos")
-        #     fig, ax = plt.subplots()
-        #     nx.draw(graph, pos, with_labels=True, node_color='skyblue', node_size=700, edge_color='gray', font_weight='bold')
-        #     plt.title(f"num_columns{num_columns}")
-        #     fig.canvas.manager.set_window_title(f"Num columns: {num_columns}")
-        #     plt.show()
-        #     exit(0)
         return None
 
-    np.random.seed(2)
     costs = {}
-    for u, v in graph.edges():
-        cost_index = np.random.choice(len(cost_probs), p=cost_probs)
+    count = defaultdict(int)
+    cost_probs = [0.2, 0.2, 0.2, 0.2, 0.2]
+    samples = np.random.choice(len(cost_probs), size=len(graph.edges), p=cost_probs)
+    for i, (u, v) in enumerate(graph.edges()):
+        cost_index = samples[i]
+        count[cost_index] += 1
         costs[u, v] = available_costs[cost_index]
+    costs = promote_edges_to_connect_high_cost(graph, costs)
 
     # Solve the multicut problem for the graph
     multicut, optimal_cost = solve_multicut(graph, costs, log=False)
 
-
-    # atleast one positive edge must be cut
-    # num_cut_edges_with_positive_cost = len(
-    #     [
-    #         (u, v)
-    #         for u, v in graph.edges()
-    #         if multicut.get((u, v), 0) == 1 and costs[u, v] > 0
-    #     ]
-    # )
     if optimal_cost < 0:
         graph_data = {
             "Nodes": [
@@ -465,40 +554,35 @@ def generate_random_graph(
         return None
 
 
-def generate_graphs_for_pair(args):
+def generate_graphs_node_size(args):
     (
         graph_count_per_size,
         node_count,
-        average_kardinality,
         cost_probs_ranges,
         available_costs,
         density_range,
-        num_special_edges_range,
     ) = args
     local_graphs = []
     while len(local_graphs) < graph_count_per_size:
         graph_data = generate_random_graph(
             node_count,
-            average_kardinality,
             cost_probs_ranges,
             available_costs,
             density_range,
-            num_special_edges_range,
         )
         if graph_data:
             local_graphs.append(graph_data)
-    return (node_count, average_kardinality, local_graphs)
+    return (node_count, local_graphs)
 
 
 def generate(
-    graph_count: int,
+    generate_per_size: int,
+    select_per_size: int,
     graph_size_range: tuple[int],
     output_path: str,
     cost_probs_ranges: List[tuple[float]],
     available_costs: List[int],
     density_range: tuple[float],
-    average_kardinality_range: tuple[int],
-    num_special_edges_range: tuple[int],
 ):
     """
     Generate n graphs and solve the multicut problem for each.
@@ -507,75 +591,46 @@ def generate(
     :param graph_size: number of nodes per graph.
     """
     min_node_count, max_node_count = graph_size_range
-    min_kardinality, max_kardinality = average_kardinality_range
-    num_size_combinations = (max_node_count - min_node_count + 1) * (
-        max_kardinality - min_kardinality + 1
-    )
-    graph_count_per_size = math.ceil(graph_count / num_size_combinations)
 
     graphs_data = defaultdict(lambda: defaultdict(list))
     args_list = [
         (
-            graph_count_per_size,
+            generate_per_size,
             node_count,
-            average_kardinality,
             cost_probs_ranges,
             available_costs,
             density_range,
-            num_special_edges_range,
         )
-        for node_count in range(min_node_count, max_node_count + 1)
-        for average_kardinality in range(min_kardinality, max_kardinality + 1)
+        for node_count in reversed(range(min_node_count, max_node_count + 1))
     ]
     with Pool(processes=cpu_count()) as pool:
-        for node_count, avg_kard, graphs in tqdm(
-            pool.imap_unordered(generate_graphs_for_pair, args_list),
+        for node_count, graphs in tqdm(
+            pool.imap_unordered(generate_graphs_node_size, args_list),
             total=len(args_list),
             desc="Generating graphs",
         ):
-            graphs_data[node_count][avg_kard] = graphs
+            graphs_data[node_count] = graphs
 
     # Prepare data for C# serialization
-    min_max_stats = {}
-    min_max_stats["min_nodes"] = min_node_count
-    min_max_stats["max_nodes"] = max_node_count
-    min_max_stats["min_edges"] = min_node_count * min_kardinality / 2
-    min_max_stats["max_edges"] = max_node_count * max_kardinality / 2
-    min_max_stats["min_special_edges"] = num_special_edges_range[0]
-    min_max_stats["max_special_edges"] = num_special_edges_range[1]
-    min_max_stats["max_num_cut_edges"] = 0
-    min_max_stats["max_num_cut_edges_with_positive_cost"] = 0
-    for kard_dict in graphs_data.values():
-        for graph_list in kard_dict.values():
-            for g in graph_list:
-                min_max_stats["max_num_cut_edges"] = max(
-                    len([e for e in g["Edges"] if e["OptimalCut"]]),
-                    min_max_stats["max_num_cut_edges"],
-                )
-                min_max_stats["max_num_cut_edges_with_positive_cost"] = max(
-                    len([e for e in g["Edges"] if e["OptimalCut"] and e["Cost"] > 0]),
-                    min_max_stats["max_num_cut_edges_with_positive_cost"],
-                )
-    print("min_max_stats", min_max_stats)
-    for kard_dict in graphs_data.values():
-        for graph_list in kard_dict.values():
-            for g in graph_list:
-                difficulty = calc_level_difficulty(g, min_max_stats)
-                g["Difficulty"] = difficulty
+    info_list = [raw_level_difficutly_stats(g) for graph_list in graphs_data.values() for g in graph_list]
+    min_max_stats = calc_min_max_stats(info_list)
+    for graph_list in graphs_data.values():
+        for g in graph_list:
+            g["Difficulty"] = calc_level_difficulty(g, min_max_stats)
 
     selected_graphs = []
-    for node_count, kard_dict in graphs_data.items():
-        for avg_kard, graph_list in kard_dict.items():
-            if graph_list:
-                # Select the dict with the maximum Difficulty value
-                hardest = max(graph_list, key=lambda g: g.get("Difficulty", 0))
-                selected_graphs.append(hardest)
-
+    for graph_list in graphs_data.values():
+        sorted_graphs = sorted(graph_list, key=lambda g: g["Difficulty"], reverse=True)
+        selected_graphs += sorted_graphs[:select_per_size]
+    
+    # sort seelcted graphs
     selected_graphs = sorted(selected_graphs, key=lambda x: x["Difficulty"])
     for idx, graph in enumerate(selected_graphs, start=1):
         graph["Name"] = str(idx)
 
+    # statisitics
     print("number of selected graphs:", len(selected_graphs))
+    print("cost count:", count_edges_by_cost(selected_graphs))
 
     # Save to a JSON file
     with open(output_path, "w") as f:
@@ -585,29 +640,21 @@ def generate(
 def main():
     output_path = "Assets/Resources/graphList.json"
     generate(
-        graph_count=130, # biggest till now 200.000
-        graph_size_range=(5, 50),
+        generate_per_size=8*30,
+        select_per_size=8,
+        graph_size_range=(5, 79),
         output_path=output_path,
         cost_probs_ranges=[
-            (0.1, 0.6),
-            (0.1, 0.6),
-            (0.1, 0.2),
-            (0.1, 0.6),
-            (0.1, 0.6),
+            (0.22, 0.22),
+            (0.22, 0.22),
+            (0.12, 0.12),
+            (0.22, 0.22),
+            (0.22, 0.22),
         ],
         available_costs=[-2, -1, 0, 1, 2],
         density_range=(0.1, 0.7),
-        average_kardinality_range=(1, 5),
-        num_special_edges_range=(0, 3),
     )
 
 
 if __name__ == "__main__":
-    # G = nx.Graph()
-    # edges = [
-    # (1, 2), (2, 3), (3, 4),  # linear chain (all bridges)
-    # ]
-    # G.add_edges_from(edges)
-    # remove_bridge(G, (2,3), 2)
-    # print(G.edges)
     main()

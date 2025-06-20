@@ -12,9 +12,10 @@ public class SoundPlayer : MonoBehaviour
     }
 
     // Method to play the sound with different pitch (height)
-    public void PlaySoundWithPitch(float pitch)
+    public void PlaySoundWithPitch(float pitch, float volume)
     {
         audioSource.pitch = pitch;  // Set the pitch
+        audioSource.volume = volume;   // Set the volume (0.0 to 1.0)
         audioSource.Play();         // Play the sound
     }
 }

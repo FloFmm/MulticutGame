@@ -65,6 +65,9 @@ public class GraphManager : MonoBehaviour
         }
         GenerateGraph();
         updateConnectedComponents();
+
+        if (currentScore == GameData.SelectedGraph.OptimalCost)
+            ActivateOverlay(() => loadNextLevel());
     }
 
     void Update()
@@ -280,6 +283,7 @@ public class GraphManager : MonoBehaviour
             scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
             if (currentScore < GameData.SelectedGraph.BestAchievedCost)
             {
+                levelOverlay.SetActive(false);
                 if (GameData.SelectedChallenge != null) //challenge
                 {
                 }
@@ -296,8 +300,7 @@ public class GraphManager : MonoBehaviour
             if (currentScore == GameData.SelectedGraph.OptimalCost)
             {
                 scoreText.color = GameData.ColorPalette.optimalSolutionColor;
-                string text = "LEVEL COMPLETE";
-                string buttonText = "NEXT LEVEL";
+
                 if (GameData.SelectedChallenge != null) //challenge
                 {
                     // update challenge highscore
@@ -314,10 +317,11 @@ public class GraphManager : MonoBehaviour
                 else // normal level
                 {
                 }
-                ActivateOverlay(text, buttonText, () => loadNextLevel());
+                ActivateOverlay(() => loadNextLevel());
             }
             else
             {
+                levelOverlay.SetActive(false);
                 scoreText.color = GameData.ColorPalette.normalTextColor;
             }
         }
@@ -342,8 +346,10 @@ public class GraphManager : MonoBehaviour
         edgeRenderer.Edge = edge;
     }
 
-    public void ActivateOverlay(string text, string buttonText, UnityAction buttonAction)
+    public void ActivateOverlay(UnityAction buttonAction)
     {
+        string text = "LEVEL COMPLETE";
+        string buttonText = "NEXT LEVEL";
         // Find the main text by name
         levelOverlay.SetActive(true);
         TMP_Text mainText = levelOverlay.transform.Find("Text")?.GetComponent<TMP_Text>();
