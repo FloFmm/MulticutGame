@@ -44,6 +44,7 @@ public class GraphManager : MonoBehaviour
             {
                 levelText.gameObject.SetActive(true);
                 levelText.GetComponent<ClickableText>().messages = GameData.SelectedGraph.Text;
+                levelText.GetComponent<ClickableText>().UpdateText();
                 levelNameText.text = $"LEVEL\n{GameData.SelectedGraphIndex + 1}\u00A0|\u00A0{GameData.TutorialList.Graphs.Count}";
             }
             else
@@ -251,7 +252,7 @@ public class GraphManager : MonoBehaviour
     public void updateCountDown()
     {
         float elapsed = Time.time - GameData.ChallengeStartTime;
-        float remainingTime = GameData.SelectedChallenge.TimeLimit + (GameData.SelectedChallengeGraphIndex + 1) * GameData.SelectedChallenge.TimePerLevel - elapsed;
+        float remainingTime = GameData.SelectedChallenge.TimeLimit + GameData.SelectedChallengeGraphIndex * GameData.SelectedChallenge.TimePerLevel - elapsed;
 
         if (remainingTime <= 0)
         {

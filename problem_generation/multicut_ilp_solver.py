@@ -395,12 +395,12 @@ def calc_level_difficulty(graph_data, min_max_stats):
             difficulty_dict[key] = (info[key] - min_max_stats[key]["min"]) / range
 
     difficulty = (
-        balance_cut_not_cut * 0.4
+        balance_cut_not_cut * 0.3
         + difficulty_dict["num_nodes"] * 0.0
         + difficulty_dict["num_edges"] * 0.0
-        + difficulty_dict["num_cut_edges"] * 0.0
+        + difficulty_dict["num_cut_edges"] * 0.3
         + difficulty_dict["num_not_cut_edges"] * 0.0
-        + difficulty_dict["num_cut_edges_with_positive_cost"] * 0.4
+        + difficulty_dict["num_cut_edges_with_positive_cost"] * 0.2
         + difficulty_dict["num_edge_crossings"] * 0.2
     )
     assert difficulty <= 1.0
@@ -640,9 +640,9 @@ def generate(
 def main():
     output_path = "Assets/Resources/graphList.json"
     generate(
-        generate_per_size=8*30,
-        select_per_size=8,
-        graph_size_range=(5, 79),
+        generate_per_size=10*30,
+        select_per_size=10,
+        graph_size_range=(5, 64),
         output_path=output_path,
         cost_probs_ranges=[
             (0.22, 0.22),

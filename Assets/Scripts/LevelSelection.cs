@@ -22,7 +22,7 @@ public class LevelSelection : MonoBehaviour
             graphs = GameData.GraphHighScoreList.Graphs;
 
         int graphIndex = 0;
-        string[] difficultyLabels = { "EASY", "MEDIUM", "ADVANCED", "EXPERT", "EXTREME" };
+        string[] difficultyLabels = { "EASY", "MEDIUM", "HARD", "EXPERT", "EXTREME" };
         int sectionIndex = 0;
         GameObject currentHeadline = null;
         GameObject currentSection = null;
@@ -88,7 +88,6 @@ public class LevelSelection : MonoBehaviour
 
     public void OnScrollChanged()
     {
-        Debug.Log("OnScrollChanged: " + scrollRect.verticalNormalizedPosition);
         GameData.levelSelectionScrollPosition = scrollRect.verticalNormalizedPosition;
     }
 

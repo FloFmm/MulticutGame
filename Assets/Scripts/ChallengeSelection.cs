@@ -42,6 +42,33 @@ public class ChallengeSelection : MonoBehaviour {
         }
     }
 
+    public static List<T> partialShuffle<T>(List<T> list, int bucketCount, System.Random rng)
+    {
+        if (bucketCount <= 0) throw new ArgumentException("bucketCount must be positive");
+        if (list == null) throw new ArgumentNullException(nameof(list));
+        if (rng == null) throw new ArgumentNullException(nameof(rng));
+
+        int bucketSize = (int)Math.Ceiling(list.Count / (double)bucketCount);
+        List<List<T>> buckets = new List<List<T>>();
+
+        for (int i = 0; i < bucketCount; i++)
+        {
+            int start = i * bucketSize;
+            int count = Math.Min(bucketSize, list.Count - start);
+            if (count <= 0) break;
+
+            List<T> bucket = list.GetRange(start, count).ToList();
+
+            // Shuffle this bucket
+            bucket = bucket.OrderBy(_ => rng.Next()).ToList();
+
+            buckets.Add(bucket);
+        }
+
+        // Flatten back into one list
+        return buckets.SelectMany(b => b).ToList();
+    }
+
     void OnChallengeSelected(Challenge challenge)
     {
         int totalGraphs = GameData.GraphList.Graphs.Count;
@@ -56,7 +83,9 @@ public class ChallengeSelection : MonoBehaviour {
 
         System.Random rng = new System.Random((int)DateTime.Now.Ticks);
         GameData.SelectedChallenge = challenge;
-        List<Graph> shuffled = challengeGraphList.OrderBy(_ => rng.Next()).ToList();
+        // List<Graph> shuffled = challengeGraphList.OrderBy(_ => rng.Next()).ToList();
+        List<Graph> shuffled = partialShuffle(challengeGraphList, 3, rng);
+
         GameData.SelectedChallengeGraphList = shuffled.Take(challenge.LevelCount).ToList();
         GameData.SelectedChallengeGraphIndex = 0;
         if (GameData.SelectedChallengeGraphList.Count > 0)

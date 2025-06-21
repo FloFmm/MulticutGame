@@ -21,7 +21,7 @@ public class ClickableText : MonoBehaviour
         UpdateText();
     }
 
-    void UpdateText()
+    public void UpdateText()
     {
         textComponent.text = messages[currentIndex];
     }

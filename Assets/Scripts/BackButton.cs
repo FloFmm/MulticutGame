@@ -22,7 +22,7 @@ public class BackButton : MonoBehaviour
             }
             else
             {
-                GameData.LoadGraphHighScoreList();
+                // GameData.LoadGraphHighScoreList(); why was that here?
                 SceneManager.LoadScene("LevelSelection");
             }
         }
