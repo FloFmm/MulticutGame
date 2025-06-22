@@ -3,6 +3,7 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 public static class GameData
 {
@@ -57,9 +58,18 @@ public static class GameData
         LastCutEdges = new List<GameObject>();
     }
 
-    public static void SaveToPlayerPrefs<T>(string key, T data)
+    // public static void SaveToPlayerPrefs<T>(string key, T data)
+    // {
+    //     string json = JsonUtility.ToJson(data);
+    //     PlayerPrefs.SetString(key, json);
+    //     PlayerPrefs.Save();
+    // }
+    public static async Task SaveToPlayerPrefs<T>(string key, T data)
     {
-        string json = JsonUtility.ToJson(data);
+        // Serialize JSON off main thread (can be slow on big data)
+        string json = await Task.Run(() => JsonUtility.ToJson(data));
+
+        // Set PlayerPrefs on main thread
         PlayerPrefs.SetString(key, json);
         PlayerPrefs.Save();
     }

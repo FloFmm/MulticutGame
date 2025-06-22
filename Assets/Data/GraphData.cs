@@ -81,6 +81,11 @@ public class Graph
 
         return graphCopy;
     }
+
+    public int CalculateCurrentCost()
+    {
+        return Edges.Where(edge => edge.IsCut).Sum(edge => edge.Cost);
+    }
 }
 
 [Serializable]

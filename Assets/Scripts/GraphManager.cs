@@ -55,7 +55,7 @@ public class GraphManager : MonoBehaviour
             countdownText.gameObject.SetActive(false);
         }
 
-        currentScore = GameData.SelectedGraph.BestAchievedCost;
+        currentScore = GameData.SelectedGraph.CalculateCurrentCost();
         scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
 
 
