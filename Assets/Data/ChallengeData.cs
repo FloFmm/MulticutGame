@@ -12,6 +12,7 @@ public class Challenge
     public float MinDifficulty;
     public float MaxDifficulty;
     public int LevelCount;
+    public string LeaderBoardId;
 }
 
 [Serializable]

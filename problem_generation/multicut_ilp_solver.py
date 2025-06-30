@@ -466,6 +466,7 @@ def generate_random_graph(
     cost_probs_ranges: List[tuple[float]],
     available_costs: List[int],
     density_range: tuple[float],
+    use_special_edges: bool,
 ):
     density = random.uniform(*density_range)
     cost_probs = generate_random_prob_distribution(cost_probs_ranges)
@@ -492,14 +493,15 @@ def generate_random_graph(
 
     # add a few special edges that can intersect
     special_edges = []
-    random.shuffle(possible_pairs)
-    i = 0
-    for u, v in possible_pairs:
-        if not is_valid_edge(u, v, num_columns, graph, is_special_edge=True):
-            continue
-        graph.add_edge(u, v)
-        i += 1
-        special_edges.append((u, v))
+    if use_special_edges:
+        random.shuffle(possible_pairs)
+        i = 0
+        for u, v in possible_pairs:
+            if not is_valid_edge(u, v, num_columns, graph, is_special_edge=True):
+                continue
+            graph.add_edge(u, v)
+            i += 1
+            special_edges.append((u, v))
 
     # Remove nodes in components of size 1 and update possible pairs
     for component in list(nx.connected_components(graph)):
@@ -561,6 +563,7 @@ def generate_graphs_node_size(args):
         cost_probs_ranges,
         available_costs,
         density_range,
+        use_special_edges,
     ) = args
     local_graphs = []
     while len(local_graphs) < graph_count_per_size:
@@ -569,6 +572,7 @@ def generate_graphs_node_size(args):
             cost_probs_ranges,
             available_costs,
             density_range,
+            use_special_edges,
         )
         if graph_data:
             local_graphs.append(graph_data)
@@ -579,10 +583,10 @@ def generate(
     generate_per_size: int,
     select_per_size: int,
     graph_size_range: tuple[int],
-    output_path: str,
     cost_probs_ranges: List[tuple[float]],
     available_costs: List[int],
     density_range: tuple[float],
+    use_special_edges: bool,
 ):
     """
     Generate n graphs and solve the multicut problem for each.
@@ -600,6 +604,7 @@ def generate(
             cost_probs_ranges,
             available_costs,
             density_range,
+            use_special_edges,
         )
         for node_count in reversed(range(min_node_count, max_node_count + 1))
     ]
@@ -624,6 +629,44 @@ def generate(
         selected_graphs += sorted_graphs[:select_per_size]
     
     # sort seelcted graphs
+    return selected_graphs
+
+
+
+def main():
+    output_path = "Assets/Resources/graphList.json"
+    graph_with_special_edges = generate(
+        generate_per_size=9*30,
+        select_per_size=9,
+        graph_size_range=(5, 64),
+        cost_probs_ranges=[
+            (0.22, 0.22),
+            (0.22, 0.22),
+            (0.12, 0.12),
+            (0.22, 0.22),
+            (0.22, 0.22),
+        ],
+        available_costs=[-2, -1, 0, 1, 2],
+        density_range=(0.1, 0.7),
+        use_special_edges=True
+    )
+    graph_without_special_edges = generate(
+        generate_per_size=1*30,
+        select_per_size=1,
+        graph_size_range=(5, 64),
+        cost_probs_ranges=[
+            (0.22, 0.22),
+            (0.22, 0.22),
+            (0.12, 0.12),
+            (0.22, 0.22),
+            (0.22, 0.22),
+        ],
+        available_costs=[-2, -1, 0, 1, 2],
+        density_range=(0.1, 0.7),
+        use_special_edges=False
+    )
+
+    selected_graphs = graph_with_special_edges + graph_without_special_edges
     selected_graphs = sorted(selected_graphs, key=lambda x: x["Difficulty"])
     for idx, graph in enumerate(selected_graphs, start=1):
         graph["Name"] = str(idx)
@@ -635,25 +678,6 @@ def generate(
     # Save to a JSON file
     with open(output_path, "w") as f:
         json.dump({"Graphs": selected_graphs}, f, indent=4)
-
-
-def main():
-    output_path = "Assets/Resources/graphList.json"
-    generate(
-        generate_per_size=10*30,
-        select_per_size=10,
-        graph_size_range=(5, 64),
-        output_path=output_path,
-        cost_probs_ranges=[
-            (0.22, 0.22),
-            (0.22, 0.22),
-            (0.12, 0.12),
-            (0.22, 0.22),
-            (0.22, 0.22),
-        ],
-        available_costs=[-2, -1, 0, 1, 2],
-        density_range=(0.1, 0.7),
-    )
 
 
 if __name__ == "__main__":

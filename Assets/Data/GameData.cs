@@ -22,7 +22,7 @@ public static class GameData
     public static float ChallengeStartTime;
 
     // Leaderboard
-    public static LeaderboardEntryList Leaderboard;
+    // public static LeaderboardEntryList Leaderboard;
 
     // Tutorial
     public static bool IsTutorial = false;
@@ -37,6 +37,7 @@ public static class GameData
     private static ColorPalette _palette;
 
     // Settings
+    public static bool SoundIsOn = true;
     public static readonly List<int> edgeCosts = new List<int> { -2, -1, 0, 1, 2 };
     public static readonly List<float> edgeWidths = new List<float> { 6f, 6f, 6f, 6f, 6f };
     public static readonly List<float> edgePitches = new List<float> { 0.6f, 0.8f, 1.0f, 1.3f, 1.6f };
@@ -53,7 +54,7 @@ public static class GameData
         LoadGraphHighScoreList();
         LoadChallengeList();
         LoadChallengeHighScoreList();
-        LoadLeaderboard();
+        // LoadLeaderboard();
         LastCutPathPositions = new List<Vector3>();
         LastCutEdges = new List<GameObject>();
     }
@@ -105,10 +106,10 @@ public static class GameData
         TutorialList = LoadFromFile<GraphList>("tutorialList");
     }
 
-    public static void LoadLeaderboard()
-    {
-        Leaderboard = LoadFromFile<LeaderboardEntryList>("leaderboard");
-    }
+    // public static void LoadLeaderboard()
+    // {
+    //     Leaderboard = LoadFromFile<LeaderboardEntryList>("leaderboard");
+    // }
 
     public static void LoadGraphHighScoreList()
     {

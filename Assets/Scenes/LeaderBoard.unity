@@ -244,7 +244,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_AnchorMin.x
@@ -252,11 +252,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1236
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_SizeDelta.y
@@ -292,11 +292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 618
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1612637046487905740, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -316,11 +316,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6721356660566046132, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_text
-      value: LEADERBOARD
+      value: LEADERBOARDS
       objectReference: {fileID: 0}
     - target: {fileID: 6721356660566046132, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_fontSize
-      value: 119.95
+      value: 85.35
       objectReference: {fileID: 0}
     - target: {fileID: 6721356660566046132, guid: 766f5a59691c07485a831c52f2f0fa5d, type: 3}
       propertyPath: m_margin.w
@@ -1065,9 +1065,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 165483b994bae8cdfab421a69c6e2beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonPrefab: {fileID: 7490338194405318846, guid: b63b289003f204e22a4f45c01c5f81dc, type: 3}
+  buttonPrefab: {fileID: 7490338194405318846, guid: f7965a98ebc553738b0c8122376ee797, type: 3}
   contentParent: {fileID: 1942997918}
-  textPrefab: {fileID: 2073410376377770129, guid: eb65adbeadb3e7fdcb1df6100e3b58aa, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

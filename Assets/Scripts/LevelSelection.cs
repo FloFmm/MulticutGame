@@ -48,7 +48,10 @@ public class LevelSelection : MonoBehaviour
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = graph.Name;
 
             // Compute ratio
-            float ratio = (graph.OptimalCost != 0f) ? (graph.BestAchievedCost / (float)graph.OptimalCost) : 1f;
+            float ratio = 0;
+            if (!GameData.IsTutorial)
+                ratio = (graph.OptimalCost != 0f) ? (graph.BestAchievedCost / (float)graph.OptimalCost) : 1f;
+            
             ratio = Mathf.Clamp01(ratio); // Ensure between 0 and 1
 
             // Determine color bucket
@@ -80,15 +83,21 @@ public class LevelSelection : MonoBehaviour
 
     IEnumerator RestoreScrollPositionNextFrame(float lastYPosition)
     {
-        yield return null; // Wait 1 frame
-        yield return null; // Wait 1 frame
-        yield return null; // Wait 1 frame
-        scrollRect.verticalNormalizedPosition = lastYPosition;
+        if (!GameData.IsTutorial)
+        {
+            yield return null; // Wait 1 frame
+            yield return null; // Wait 1 frame
+            yield return null; // Wait 1 frame
+            scrollRect.verticalNormalizedPosition = lastYPosition;
+        }
     }
 
     public void OnScrollChanged()
     {
-        GameData.levelSelectionScrollPosition = scrollRect.verticalNormalizedPosition;
+        if (!GameData.IsTutorial)
+        {
+            GameData.levelSelectionScrollPosition = scrollRect.verticalNormalizedPosition;
+        }
     }
 
     void OnLevelSelected(int graphIndex)

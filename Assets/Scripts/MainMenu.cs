@@ -1,8 +1,25 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
+using GooglePlayGames.BasicApi;
+using TMPro;
 public class MainMenu : MonoBehaviour
 {
+    public TMP_Text soundButtonText;
+    void Start()
+    {
+        if (GameData.SoundIsOn)
+            soundButtonText.text = "SOUND ON";
+        else
+            soundButtonText.text = "SOUND OFF";
+
+        // Initialize and activate the Play Games platform
+        PlayGamesPlatform.Activate();
+    }
+
     public void OnClickTutorial()
     {
         GameData.IsTutorial = true;
@@ -22,11 +39,16 @@ public class MainMenu : MonoBehaviour
 
     public void OnClickLeaderboard()
     {
+
         SceneManager.LoadScene("Leaderboard");
     }
 
     public void OnClickSettings()
     {
-        Debug.Log("Settings clicked");
+        GameData.SoundIsOn = !GameData.SoundIsOn;
+        if (GameData.SoundIsOn)
+            soundButtonText.text = "SOUND ON";
+        else
+            soundButtonText.text = "SOUND OFF";
     }
 }

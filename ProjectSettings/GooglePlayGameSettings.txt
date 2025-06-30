@@ -1,0 +1,11 @@
+lastUpgrade=20000
+proj.pluginVersion=2.0.0
+proj.AppId=957179894873
+and.BundleId=com.GrasshopperGaming.Multicut
+proj.classDir=Assets
+proj.ConstantsClassName=GPGSIds
+and.ResourceData=%3c%3fxml+version%3d%221.0%22+encoding%3d%22utf-8%22%3f%3e%0a%3c%21--Google+Play+game+services+IDs.+Save+this+file+as+res%2fvalues%2fgames-ids.xml+in+your+project.--%3e%0a%3cresources%3e%0a++%3c%21--app_id--%3e%0a++%3cstring+name%3d%22app_id%22+translatable%3d%22false%22%3e957179894873%3c%2fstring%3e%0a++%3c%21--package_name--%3e%0a++%3cstring+name%3d%22package_name%22+translatable%3d%22false%22%3ecom.GrasshopperGaming.Multicut%3c%2fstring%3e%0a++%3c%21--leaderboard+Leaderboard--%3e%0a++%3cstring+name%3d%22leaderboard_leaderboard%22+translatable%3d%22false%22%3eCgkI2bj44u0bEAIQAQ%3c%2fstring%3e%0a%3c%2fresources%3e
+and.ClientId=957179894873-b19dim8f5m4o358mnkl9eoq18rsp5ibt.apps.googleusercontent.com
+android.SetupDone=true
+App.NearbdServiceId=com.GrasshopperGaming.Multicut
+android.NearbySetupDone=true
