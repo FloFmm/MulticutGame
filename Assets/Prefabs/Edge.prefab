@@ -52,6 +52,10 @@ MonoBehaviour:
   touchThreshold: 10
   cutDistance: 15
   costNodePrefab: {fileID: 4083181564898416921, guid: 88ce6ab69429444b5b9cd8cc5d8e0714, type: 3}
+  cutImageObj: {fileID: 0}
+  rubberImageObj: {fileID: 0}
+  cutImageObjPrefab: {fileID: 5822494827028219806, guid: 12c4354eb46b7dda08d7b1851236c773, type: 3}
+  rubberImageObjPrefab: {fileID: 6650276887433181757, guid: e0dd94ecccb6eb4d48127587d7c1cf7a, type: 3}
   graphManager: {fileID: 0}
 --- !u!120 &2879204654193666907
 LineRenderer:

@@ -148,9 +148,8 @@ GameObject:
   - component: {fileID: 8069359976265681261}
   - component: {fileID: 8078513972007572640}
   - component: {fileID: 5834829331650988111}
-  - component: {fileID: 8336999329257967093}
   m_Layer: 5
-  m_Name: BackButton
+  m_Name: HamburgerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,7 +203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4571828015118065507, guid: 4cc3ef20ddcaf36b9afe8f1c776af73f, type: 3}
+  m_Sprite: {fileID: -7483554341461126079, guid: e27b8916b8e456addb781f7cf1e440ef, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -258,9 +257,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8336999329257967093}
+      - m_Target: {fileID: 102900000, guid: b9a77cbc382d07220ab19c8aae7c8292, type: 3}
         m_TargetAssemblyTypeName: BackButton, Assembly-CSharp
-        m_MethodName: OnBackButtonClicked
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -270,15 +269,3 @@ MonoBehaviour:
           m_StringArgument: OnBackButtonClicked()
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &8336999329257967093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7279117899279508276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81c6e2228c3b9bd5890c70a0b9cad5e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

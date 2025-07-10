@@ -30,6 +30,7 @@ public class Edge
     public bool IsCut;
     public bool OptimalCut;
     public bool IsSpecial = false;
+    public bool Hint = false;
 
     public Edge Copy()
     {

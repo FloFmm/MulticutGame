@@ -355,6 +355,7 @@ public class GraphManager : MonoBehaviour
         edgeRenderer.pointA = nodeA.transform;
         edgeRenderer.pointB = nodeB.transform;
         edgeRenderer.Edge = edge;
+        edgeRenderer.Hint = false;
     }
 
     public void ActivateOverlay(UnityAction buttonAction)
@@ -432,5 +433,50 @@ public class GraphManager : MonoBehaviour
     public List<GameObject> getEdges()
     {
         return edges;
+    }
+
+
+    public void ResetEdges()
+    {
+        foreach (GameObject edgeObj in edges)
+        {
+            if (edgeObj != null)
+            {
+                // != null test is needed because of object destruction on scene change
+                EdgeRenderer edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
+                edgeRenderer.IsCut = false;
+            }
+        }
+    }
+
+    public void ShowHint()
+    {
+        // Shuffle the edges randomly
+        List<GameObject> shuffledEdges = new List<GameObject>(edges);
+        for (int i = 0; i < shuffledEdges.Count; i++)
+        {
+            int randIndex = UnityEngine.Random.Range(i, shuffledEdges.Count);
+            var temp = shuffledEdges[i];
+            shuffledEdges[i] = shuffledEdges[randIndex];
+            shuffledEdges[randIndex] = temp;
+        }
+
+        foreach (GameObject edgeObj in shuffledEdges)
+        {
+            int completedGraphs = GameData.GraphHighScoreList.Graphs
+                .Count(graph => graph.OptimalCost == graph.BestAchievedCost);
+            if (10 + completedGraphs - GameData.HintsUsed > 0)
+            {
+                GameData.HintsUsed += 1;
+                var edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
+                if (edgeRenderer.OptimalCut != edgeRenderer.IsCut && !edgeRenderer.Hint)
+                {
+                    edgeRenderer.Hint = true;
+                    Debug.Log(10 + completedGraphs - GameData.HintsUsed);
+                    Debug.Log("hints remaining");
+                    return;
+                }
+            }
+        }
     }
 }

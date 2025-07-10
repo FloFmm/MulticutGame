@@ -14,6 +14,9 @@ public class EdgeRenderer : MonoBehaviour
     public float cutDistance;
     public GameObject costNodePrefab;
 
+    // images
+    public GameObject cutImageObjPrefab, rubberImageObjPrefab;
+    private GameObject cutImageObj, rubberImageObj;
     // cost Node
     private GameObject costNode;
     private TextMeshProUGUI costNodeText;
@@ -38,6 +41,25 @@ public class EdgeRenderer : MonoBehaviour
             Cost = edge.Cost;
             IsCut = edge.IsCut;
             OptimalCut = edge.OptimalCut;
+        }
+    }
+    public bool Hint
+    {
+        get => edge.Hint;
+        set
+        {
+            edge.Hint = value;
+            if (value)
+            {
+                if (edge.OptimalCut)
+                {
+                    cutImageObj.SetActive(value);
+                }
+                else
+                {
+                    rubberImageObj.SetActive(value);
+                }
+            }
         }
     }
     public int Cost
@@ -116,6 +138,12 @@ public class EdgeRenderer : MonoBehaviour
         lineRenderer.SetPosition(1, midPoint);
         lineRenderer.SetPosition(2, pointB.position);
 
+        // instatiate hints
+        GameObject canvasGO = GameObject.Find("GameCanvas");
+        cutImageObj = Instantiate(cutImageObjPrefab, midPoint, Quaternion.identity, canvasGO.transform);
+        cutImageObj.SetActive(false);
+        rubberImageObj = Instantiate(rubberImageObjPrefab, midPoint, Quaternion.identity, canvasGO.transform);
+        rubberImageObj.SetActive(false);
         // initialize cost Node
         costNode = Instantiate(costNodePrefab, midPoint, Quaternion.identity, graphManager.transform);
         costNodeRenderer = costNode.GetComponent<SpriteRenderer>();
@@ -132,7 +160,7 @@ public class EdgeRenderer : MonoBehaviour
 
     void Update()
     {
-        if (dragging || IsCut || edgeLength < 100f)
+        if (dragging || IsCut || edgeLength < 100f || Hint)
             costNode.SetActive(false);
         else
             costNode.SetActive(true);

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 public static class GameData
 {
+    // Hints
+    public static int HintsUsed = 0;
+
     // Graph
     public static GraphList GraphList;
     public static GraphList GraphHighScoreList;
