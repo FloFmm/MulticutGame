@@ -24,7 +24,12 @@
 
 public static class GPGSIds
 {
-        public const string leaderboard_leaderboard = "CgkI2bj44u0bEAIQAQ"; // <GPGSID>
+        public const string leaderboard_levels_completed = "CgkI2bj44u0bEAIQAQ"; // <GPGSID>
+        public const string leaderboard_medium_challenge = "CgkI2bj44u0bEAIQBA"; // <GPGSID>
+        public const string leaderboard_extreme_challenge = "CgkI2bj44u0bEAIQBw"; // <GPGSID>
+        public const string leaderboard_easy_challenge = "CgkI2bj44u0bEAIQAw"; // <GPGSID>
+        public const string leaderboard_hard_challenge = "CgkI2bj44u0bEAIQBQ"; // <GPGSID>
+        public const string leaderboard_expert_challenge = "CgkI2bj44u0bEAIQBg"; // <GPGSID>
 
 }
 

@@ -11,11 +11,6 @@ public class MainMenu : MonoBehaviour
     public TMP_Text soundButtonText;
     void Start()
     {
-        if (GameData.SoundIsOn)
-            soundButtonText.text = "SOUND ON";
-        else
-            soundButtonText.text = "SOUND OFF";
-
         // Initialize and activate the Play Games platform
         PlayGamesPlatform.Activate();
     }

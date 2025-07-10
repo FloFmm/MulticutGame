@@ -24,6 +24,10 @@ public static class GameData
     // Leaderboard
     // public static LeaderboardEntryList Leaderboard;
 
+    // Levelselection
+    public static int DifficultyCount = 5;
+    public static int LevelSelectionSectionIndex = 0;
+
     // Tutorial
     public static bool IsTutorial = false;
     public static GraphList TutorialList;

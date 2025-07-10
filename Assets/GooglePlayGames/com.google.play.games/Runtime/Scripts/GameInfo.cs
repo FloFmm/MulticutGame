@@ -38,7 +38,7 @@ namespace GooglePlayGames {
 
         public const string ApplicationId = "957179894873"; // Filled in automatically
         public const string IosClientId = "__IOS_CLIENTID__"; // Filled in automatically
-        public const string WebClientId = "957179894873-b19dim8f5m4o358mnkl9eoq18rsp5ibt.apps.googleusercontent.com"; // Filled in automatically
+        public const string WebClientId = "957179894873-a6ug9vo71seamupbhp31dvkg7tsfsal3.apps.googleusercontent.com"; // Filled in automatically
         public const string NearbyConnectionServiceId = "com.GrasshopperGaming.Multicut";
 
         public static bool ApplicationIdInitialized() {
