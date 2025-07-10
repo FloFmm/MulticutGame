@@ -24,7 +24,6 @@ public class LevelSelection : MonoBehaviour
         else
             graphs = GameData.GraphHighScoreList.Graphs;
 
-        int graphIndex = 0;
         int startIndex, endIndex;
         if (GameData.IsTutorial)
         {
@@ -90,11 +89,9 @@ public class LevelSelection : MonoBehaviour
                 image.color = GameData.ColorPalette.edgeColors[colorIndex];
 
             // Optional: add a click handler
-            int currentIndex = graphIndex; // fixes closure issue
-        
+            int currentIndex = i; // fixes closure issue
             newButton.GetComponent<Button>().onClick.AddListener(() => OnLevelSelected(currentIndex));
             buttons.Add(newButton);    
-            graphIndex++;
         }
     }
 

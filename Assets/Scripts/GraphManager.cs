@@ -284,7 +284,10 @@ public class GraphManager : MonoBehaviour
             scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost}";
             if (currentScore < GameData.SelectedGraph.BestAchievedCost)
             {
-                levelOverlay.SetActive(false);
+                if (levelOverlay.activeSelf)
+                {
+                    levelOverlay.SetActive(false);
+                }
                 if (GameData.SelectedChallenge != null) //challenge
                 {
                 }
@@ -322,12 +325,19 @@ public class GraphManager : MonoBehaviour
             }
             else
             {
-                levelOverlay.SetActive(false);
+                if (levelOverlay.activeSelf)
+                {
+                    levelOverlay.SetActive(false);
+                }
                 scoreText.color = GameData.ColorPalette.normalTextColor;
             }
         }
         else
         {
+            if (levelOverlay.activeSelf)
+            {
+                levelOverlay.SetActive(false);
+            }
             scoreText.color = GameData.ColorPalette.invalidSolutionColor;
             scoreText.text = $"{-currentScore}/{-GameData.SelectedGraph.OptimalCost} INVALID!";
         }
