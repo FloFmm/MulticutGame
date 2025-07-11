@@ -16,6 +16,7 @@ public class GraphManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelNameText;
     public TextMeshProUGUI countdownText;
+    public TextMeshProUGUI hintRemainingText;
     public RectTransform graphContainingRect;
     private List<GameObject> edges = new List<GameObject>();
     private int currentScore = 0;
@@ -69,6 +70,8 @@ public class GraphManager : MonoBehaviour
 
         if (currentScore == GameData.SelectedGraph.OptimalCost)
             ActivateOverlay(() => loadNextLevel());
+
+        UpdateHintsText();
     }
 
     void Update()
@@ -451,32 +454,66 @@ public class GraphManager : MonoBehaviour
 
     public void ShowHint()
     {
-        // Shuffle the edges randomly
-        List<GameObject> shuffledEdges = new List<GameObject>(edges);
-        for (int i = 0; i < shuffledEdges.Count; i++)
-        {
-            int randIndex = UnityEngine.Random.Range(i, shuffledEdges.Count);
-            var temp = shuffledEdges[i];
-            shuffledEdges[i] = shuffledEdges[randIndex];
-            shuffledEdges[randIndex] = temp;
-        }
+        int completedGraphs = GameData.GraphHighScoreList.Graphs
+            .Count(graph => graph.OptimalCost == graph.BestAchievedCost);
 
-        foreach (GameObject edgeObj in shuffledEdges)
+        int hintsUsed = PlayerPrefs.GetInt("HintsUsed", 0);
+        if (hintsRemaining(hintsUsed) >= 1)
         {
-            int completedGraphs = GameData.GraphHighScoreList.Graphs
-                .Count(graph => graph.OptimalCost == graph.BestAchievedCost);
-            if (10 + completedGraphs - GameData.HintsUsed > 0)
+            // Shuffle the edges randomly
+            List<GameObject> shuffledEdges = new List<GameObject>(edges);
+            for (int i = 0; i < shuffledEdges.Count; i++)
             {
-                GameData.HintsUsed += 1;
+                int randIndex = UnityEngine.Random.Range(i, shuffledEdges.Count);
+                var temp = shuffledEdges[i];
+                shuffledEdges[i] = shuffledEdges[randIndex];
+                shuffledEdges[randIndex] = temp;
+            }
+
+            // first hint cost!=0 edges
+            foreach (GameObject edgeObj in shuffledEdges)
+            {
                 var edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
-                if (edgeRenderer.OptimalCut != edgeRenderer.IsCut && !edgeRenderer.Hint)
+                if (edgeRenderer.OptimalCut != edgeRenderer.IsCut && !edgeRenderer.Hint && edgeRenderer.Cost != 0)
                 {
                     edgeRenderer.Hint = true;
-                    Debug.Log(10 + completedGraphs - GameData.HintsUsed);
-                    Debug.Log("hints remaining");
+                    Debug.Log(hintsRemaining(hintsUsed + 1));
+                    PlayerPrefs.SetInt("HintsUsed", hintsUsed + 1);
+                    PlayerPrefs.Save();
+                    hintRemainingText.text = $"{(int)hintsRemaining(hintsUsed + 1)}";
+                    return;
+                }
+            }
+
+            // then hint cost==0 edges
+            foreach (GameObject edgeObj in shuffledEdges)
+            {
+                var edgeRenderer = edgeObj.GetComponent<EdgeRenderer>();
+                if (edgeRenderer.OptimalCut != edgeRenderer.IsCut && !edgeRenderer.Hint && edgeRenderer.Cost == 0)
+                {
+                    edgeRenderer.Hint = true;
+                    Debug.Log(hintsRemaining(hintsUsed + 1));
+                    PlayerPrefs.SetInt("HintsUsed", hintsUsed + 1);
+                    PlayerPrefs.Save();
+                    hintRemainingText.text = $"{(int)hintsRemaining(hintsUsed + 1)}";
                     return;
                 }
             }
         }
+    }
+
+    private void UpdateHintsText()
+    {
+        int hintsUsed = PlayerPrefs.GetInt("HintsUsed", 0);
+
+        hintRemainingText.text = $"{(int)hintsRemaining(hintsUsed)}";
+    }
+
+    private float hintsRemaining(int hintsUsed, int startAmount = 10, float hintsPerCompletedLevel = 0.2f)
+    {
+        int completedGraphs = GameData.GraphHighScoreList.Graphs
+            .Count(graph => graph.OptimalCost == graph.BestAchievedCost);
+
+        return startAmount + completedGraphs * hintsPerCompletedLevel - hintsUsed;
     }
 }
