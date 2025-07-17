@@ -1,0 +1,54 @@
+{
+    "Challenges": [
+        {
+            "Name": "EASY",
+            "CreatedAt": "2025-06-24T11:58:26.689546Z",
+            "TimeLimit": 60,
+            "TimePerLevel": 15,
+            "MinDifficulty": 0.0,
+            "MaxDifficulty": 0.2,
+            "LevelCount": 120, 
+            "LeaderBoardId": "CgkI2bj44u0bEAIQAw"
+        },
+        {
+            "Name": "MEDIUM",
+            "CreatedAt": "2025-06-23T11:58:26.689546Z",
+            "TimeLimit": 80,
+            "TimePerLevel": 20,
+            "MinDifficulty": 0.2,
+            "MaxDifficulty": 0.4,
+            "LevelCount": 120, 
+            "LeaderBoardId": "CgkI2bj44u0bEAIQBA"
+        },
+        {
+            "Name": "HARD",
+            "CreatedAt": "2025-06-23T11:58:26.689546Z",
+            "TimeLimit": 100,
+            "TimePerLevel": 30,
+            "MinDifficulty": 0.4,
+            "MaxDifficulty": 0.6,
+            "LevelCount": 120, 
+            "LeaderBoardId": "CgkI2bj44u0bEAIQBQ"
+        },
+        {
+            "Name": "EXPERT",
+            "CreatedAt": "2025-06-23T11:58:26.689546Z",
+            "TimeLimit": 120,
+            "TimePerLevel": 45,
+            "MinDifficulty": 0.6,
+            "MaxDifficulty": 0.8,
+            "LevelCount": 120, 
+            "LeaderBoardId": "CgkI2bj44u0bEAIQBg"
+        },
+        {
+            "Name": "EXTREME",
+            "CreatedAt": "2025-06-23T11:58:26.689546Z",
+            "TimeLimit": 140,
+            "TimePerLevel": 60,
+            "MinDifficulty": 0.8,
+            "MaxDifficulty": 1.0,
+            "LevelCount": 120, 
+            "LeaderBoardId": "CgkI2bj44u0bEAIQBw"
+        }
+    ]
+}

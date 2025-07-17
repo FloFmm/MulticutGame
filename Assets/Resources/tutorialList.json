@@ -1,0 +1,897 @@
+{
+    "Graphs": [
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -2,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "1",
+            "Text": [
+                "To cut an string, drag your finger across it."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": 0,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "2",
+            "Text": [
+                "You can switch between the Scissors and the Eraser using the button in the top right corner.",
+                "To complete this level, undo all cuts by draging your finger across them."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 0,
+                        "y": 2
+                    }
+                },
+                {
+                    "Id": 5,
+                    "Position": {
+                        "x": 1,
+                        "y": 2
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 0,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 4,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 5,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -3,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "3",
+            "Text": [
+                "Cutting an string gives points based on its color.",
+                "You complete a level by reaching the optimal score shown in the top left."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 1,
+                        "y": -1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 4,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -3,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "4",
+            "Text": [
+                "Not all cuts are valid!",
+                "There’s one rule: when you cut the string between two dots, no path of remaining strings may connect them.",
+                "In other words, dots must be completely disconnected — no paths can remain between them.",
+                "You can check if a cut is invalid by looking at the indicator in the top left corner.",
+                "Invalid cuts will be undone automatically when you lift your finger.",
+                "Complete this level by finding all valid cuts."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 1,
+                        "y": -1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": 0,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 4,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -2,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "5",
+            "Text": [
+                "Sometimes you have to cut multiple strings in a single move!",
+                "To do this, hold down your finger and drag it across several strings, one after the other.",
+                "Remember: when you cut the string between two dots, no path of remaining strings may connect them.",
+                "Can you see why both the green and yellow strings need to be cut in the same move?"
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 2,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 2
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 0,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -2,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "6",
+            "Text": [
+                "Sometimes you have to cut a red or orange string with negative points to unlock green ones and earn more overall.",
+                "Remember: when you cut the string between two dots, no path of remaining strings may connect them.",
+                "In this level, you need to cut 3 strings in a single move. Can you spot which ones?",
+                "(Tap for solution)",
+                "Solution: it’s both green strings and the orange one."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 1,
+                        "y": 2
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": 0,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 4,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -2,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "7",
+            "Text": [
+                "Strings can cross each other. Don’t let that confuse you.",
+                "(Tap to see the solution)",
+                "Solution: the yellow and green strings are still correct."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 2
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 2,
+                        "y": 1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 0,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 0,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 1,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 2,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -2,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "8",
+            "Text": [
+                "Sometimes it’s smart to isolate a dot.",
+                "Remember: when you cut the string between two dots, no path of remaining strings may connect them.",
+                "So, cutting all strings connected to a single dot is always a valid move.",
+                "(Tap for solution)",
+                "Cut all strings connected to the dot in the middle."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 1,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 1,
+                        "y": 2
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 0,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 2,
+                        "y": 1
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 2,
+                    "Cost": 0,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 2,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": 1,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 0,
+                    "Cost": 1,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 0,
+                    "Cost": 2,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 1,
+                    "Cost": 0,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 2,
+                    "Cost": 1,
+                    "IsCut": true,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": 0,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "9",
+            "Text": [
+                "Use the reset button in the top left corner to undo all the cuts in one go."
+            ]
+        },
+        {
+            "Nodes": [
+                {
+                    "Id": 0,
+                    "Position": {
+                        "x": 0,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 1,
+                    "Position": {
+                        "x": 2,
+                        "y": 0
+                    }
+                },
+                {
+                    "Id": 2,
+                    "Position": {
+                        "x": 0,
+                        "y": 3
+                    }
+                },
+                {
+                    "Id": 3,
+                    "Position": {
+                        "x": 2,
+                        "y": 3
+                    }
+                },
+                {
+                    "Id": 4,
+                    "Position": {
+                        "x": 1,
+                        "y": 1
+                    }
+                },
+                {
+                    "Id": 5,
+                    "Position": {
+                        "x": 1,
+                        "y": 2
+                    }
+                }
+                
+            ],
+            "Edges": [
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 1,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 3,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 1,
+                    "Cost": 0,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 3,
+                    "ToNodeId": 4,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 4,
+                    "ToNodeId": 5,
+                    "Cost": -1,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 5,
+                    "Cost": 1,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 1,
+                    "ToNodeId": 5,
+                    "Cost": 0,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 2,
+                    "ToNodeId": 4,
+                    "Cost": 2,
+                    "IsCut": false,
+                    "OptimalCut": false,
+                    "IsSpecial": false
+                },
+                {
+                    "FromNodeId": 0,
+                    "ToNodeId": 2,
+                    "Cost": -2,
+                    "IsCut": false,
+                    "OptimalCut": true,
+                    "IsSpecial": false
+                }
+            ],
+            "OptimalCost": -3,
+            "BestAchievedCost": 0,
+            "CreatedAt": "2025-06-11T11:58:26.689546Z",
+            "Difficulty": 0.0,
+            "Name": "10",
+            "Text": [
+                "If you get stuck, click the 'Hints' button in the top-left corner.",
+                "You start with ten hints and gain one for every five levels you complete."
+            ]
+        }
+    ]
+}

@@ -84,7 +84,8 @@ mono_crash.mem.6403.1.blob
 
 # python
 venv
-Assets/Resources/*.json
+Assets/Resources/graphList.json
+
 
 # data base
 *.db
