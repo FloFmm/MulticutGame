@@ -25,7 +25,7 @@ public static class GameData
     // public static LeaderboardEntryList Leaderboard;
 
     // Levelselection
-    public static int DifficultyCount = 5;
+    public static int DifficultyCount = 10;
     public static int LevelSelectionSectionIndex = 0;
 
     // Tutorial
@@ -103,17 +103,13 @@ public static class GameData
     public static void LoadGraphList()
     {
         GraphList = LoadFromFile<GraphList>("graphList");
+        GraphList.Graphs.AddRange(LoadFromFile<GraphList>("graphListSortedBySize").Graphs);
     }
 
     public static void LoadTutorialList()
     {
         TutorialList = LoadFromFile<GraphList>("tutorialList");
     }
-
-    // public static void LoadLeaderboard()
-    // {
-    //     Leaderboard = LoadFromFile<LeaderboardEntryList>("leaderboard");
-    // }
 
     public static void LoadGraphHighScoreList()
     {

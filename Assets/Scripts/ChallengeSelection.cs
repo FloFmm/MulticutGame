@@ -18,7 +18,7 @@ public class ChallengeSelection : MonoBehaviour {
             GameObject newButton = Instantiate(buttonPrefab, contentParent);
             newButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = challenge.Name;
             // Set HighScore and TimeLimit (in 2 columns below)
-            int totalGraphs = GameData.GraphList.Graphs.Count;
+            int totalGraphs = GameData.GraphList.Graphs.Count / 2; // only use first half of graphs (by difficulty sorted levels)
             int startIndex = Mathf.FloorToInt(challenge.MinDifficulty * totalGraphs);
             int endIndex = Mathf.CeilToInt(challenge.MaxDifficulty * totalGraphs);
             int levelCount = endIndex - startIndex;
@@ -71,7 +71,7 @@ public class ChallengeSelection : MonoBehaviour {
 
     void OnChallengeSelected(Challenge challenge)
     {
-        int totalGraphs = GameData.GraphList.Graphs.Count;
+        int totalGraphs = GameData.GraphList.Graphs.Count / 2; // only use first half of graphs (by difficulty sorted levels)
         int startIndex = Mathf.FloorToInt(challenge.MinDifficulty * totalGraphs);
         int endIndex = Mathf.CeilToInt(challenge.MaxDifficulty * totalGraphs);
         List<Graph> challengeGraphList = new List<Graph>();

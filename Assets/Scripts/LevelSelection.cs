@@ -16,7 +16,7 @@ public class LevelSelection : MonoBehaviour
     public ScrollRect scrollRect;
     private List<Graph> graphs;
     private List<GameObject> buttons = new List<GameObject>();
-    private static string[] difficultyLabels = { "EASY", "MEDIUM", "HARD", "EXPERT", "EXTREME" };
+    private static string[] difficultyLabels = { "EASY", "MEDIUM", "HARD", "EXPERT", "EXTREME", "TINY", "SMALL", "NORMAL", "LARGE", "XXL" };
     void Start()
     {
         if (GameData.IsTutorial)
@@ -91,7 +91,7 @@ public class LevelSelection : MonoBehaviour
             // Optional: add a click handler
             int currentIndex = i; // fixes closure issue
             newButton.GetComponent<Button>().onClick.AddListener(() => OnLevelSelected(currentIndex));
-            buttons.Add(newButton);    
+            buttons.Add(newButton);
         }
     }
 

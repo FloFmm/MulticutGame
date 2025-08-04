@@ -634,10 +634,10 @@ def generate(
 
 
 def main():
-    output_path = "Assets/Resources/graphList.json"
+    
     graph_with_special_edges = generate(
-        generate_per_size=9*30,
-        select_per_size=9,
+        generate_per_size=10*120,
+        select_per_size=10,
         graph_size_range=(5, 64),
         cost_probs_ranges=[
             (0.22, 0.22),
@@ -651,8 +651,8 @@ def main():
         use_special_edges=True
     )
     graph_without_special_edges = generate(
-        generate_per_size=1*30,
-        select_per_size=1,
+        generate_per_size=0*30,
+        select_per_size=0,
         graph_size_range=(5, 64),
         cost_probs_ranges=[
             (0.22, 0.22),
@@ -667,15 +667,19 @@ def main():
     )
 
     selected_graphs = graph_with_special_edges + graph_without_special_edges
-    selected_graphs = sorted(selected_graphs, key=lambda x: x["Difficulty"])
+    # order by difficulty
+    # selected_graphs = sorted(selected_graphs, key=lambda x: x["Difficulty"])
+    # order by node count
+    selected_graphs = sorted(selected_graphs, key=lambda x: len(x["Nodes"]))
     for idx, graph in enumerate(selected_graphs, start=1):
-        graph["Name"] = str(idx)
+        graph["Name"] = str(idx+600)
 
     # statisitics
     print("number of selected graphs:", len(selected_graphs))
     print("cost count:", count_edges_by_cost(selected_graphs))
 
     # Save to a JSON file
+    output_path = "Assets/Resources/graphListSortedBySize.json"
     with open(output_path, "w") as f:
         json.dump({"Graphs": selected_graphs}, f, indent=4)
 
